@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { INDICATORS, type IndicatorDef } from '../../content/indicators';
 import { REGION_ORDER, REGIONS } from '../../content/regions';
 import { SYMPTOMS } from '../../content/symptoms';
+import { dueToday } from '../../domain/due';
 import { validateValue } from '../../domain/input';
 import { entryFor } from '../../domain/series';
 import { ALL_INDICATORS, DAILY_STEPS, type CheckInStep, type DayEntry, type IndicatorId } from '../../domain/types';
@@ -9,6 +10,7 @@ import { useApp } from '../../state/store';
 import { Checkbox } from '../Checkbox';
 import { SourceLink } from '../SourceLink';
 import './checkin.css';
+import { WeeklyCheckIn } from './WeeklyCheckIn';
 
 export const STEP_TITLE: Record<CheckInStep, string> = {
   vitals: 'Vitals',
@@ -223,21 +225,45 @@ function StepForm(p: { step: CheckInStep; entry: DayEntry | undefined; onSaved()
   );
 }
 
-/** The daily check-in: five short steps, each saved on its own. */
+/** The check-in: five short daily steps, each saved on its own, and a weekly part. */
 export function CheckIn() {
   const { state, dispatch } = useApp();
   const { profile } = state;
   const entry = entryFor(profile, profile.missionDay);
   const done = (step: CheckInStep) => !!entry?.stepsDone.includes(step);
+  const due = dueToday(profile);
+  // Opens where there is something to do: the daily steps first, then the weekly part.
+  const [weekly, setWeekly] = useState(() => due.dailySteps.length === 0 && due.weekly.length > 0);
   const [step, setStep] = useState<CheckInStep>(() => DAILY_STEPS.find((s) => !done(s)) ?? DAILY_STEPS[0]);
   const at = DAILY_STEPS.indexOf(step);
 
+  const head = (
+    <div className="page-head">
+      <h2>{weekly ? 'Weekly check-in' : 'Daily check-in'}</h2>
+      <span className="panel-meta mono">Flight day {profile.missionDay}</span>
+      <div className="segmented" role="group" aria-label="Part">
+        <button type="button" aria-pressed={!weekly} onClick={() => setWeekly(false)}>
+          Daily
+        </button>
+        <button type="button" aria-pressed={weekly} onClick={() => setWeekly(true)}>
+          Weekly{due.weekly.length > 0 && <> <span className="tag">due</span></>}
+        </button>
+      </div>
+    </div>
+  );
+
+  if (weekly) {
+    return (
+      <div className="page">
+        {head}
+        <WeeklyCheckIn />
+      </div>
+    );
+  }
+
   return (
     <div className="page">
-      <div className="page-head">
-        <h2>Daily check-in</h2>
-        <span className="panel-meta mono">Flight day {profile.missionDay}</span>
-      </div>
+      {head}
 
       <ol className="steps" aria-label="Steps">
         {DAILY_STEPS.map((s, i) => (

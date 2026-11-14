@@ -216,3 +216,99 @@
   border-color: var(--warning);
   color: var(--warning);
 }
+
+/* ------------------------------------------------------------ weekly part and the two mini tests */
+.weekly-tests {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 36px;
+  margin-bottom: 20px;
+}
+
+.weekly-block h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.weekly-block .field-help {
+  margin: 0 0 8px;
+}
+
+.weekly-result {
+  font-size: 13px;
+  color: var(--bone);
+}
+
+.minitest {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: oklch(0.9 0.02 228 / 0.04);
+}
+
+.minitest-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.minitest-count {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.minitest-status {
+  min-height: 1.5em;
+  margin-top: 6px;
+  color: var(--caution);
+  font-size: 14px;
+}
+
+.minitest-result {
+  font-weight: 600;
+}
+
+.minitest kbd {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0 5px;
+}
+
+.reaction-pad {
+  width: 100%;
+  height: 132px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  background: var(--plate);
+  color: var(--muted);
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.reaction-pad[data-phase='signal'] {
+  background: var(--bone);
+  border-color: var(--bone);
+  color: var(--dark);
+}
+
+.vision-stage {
+  height: 150px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--plate);
+  color: var(--text);
+}
+
+.vision-keys {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}

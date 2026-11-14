@@ -1,10 +1,13 @@
 import { REGIONS } from '../../content/regions';
+import { INDICATORS } from '../../content/indicators';
 import { flagged } from '../../domain/assess';
+import { dueToday } from '../../domain/due';
 import { reviewDue } from '../../domain/review';
 import type { Assessment } from '../../domain/status';
 import { stepsDoneToday } from '../../domain/streak';
 import { DAILY_STEPS, type RegionId } from '../../domain/types';
 import { useApp } from '../../state/store';
+import { STEP_TITLE } from '../checkin/CheckIn';
 import { StatusGlyph } from '../StatusGlyph';
 
 /** The right-hand panel when no region is selected: what needs attention today. */
@@ -14,6 +17,7 @@ export function DaySummary(p: { all: Record<RegionId, Assessment> }) {
   const attention = flagged(p.all);
   const steps = stepsDoneToday(profile);
   const review = reviewDue(profile.missionDay);
+  const due = dueToday(profile);
 
   let lead = `All ${Object.keys(p.all).length} systems nominal`;
   if (attention.length === 1) lead = '1 system needs attention';
@@ -69,11 +73,29 @@ export function DaySummary(p: { all: Record<RegionId, Assessment> }) {
       )}
 
       <div className="sec">
-        <h3>Check-in</h3>
+        <h3>Due today</h3>
         <div>
           <p>
             {steps} of {DAILY_STEPS.length} steps done today.
           </p>
+          {due.dailySteps.length === 0 && due.weekly.length === 0 ? (
+            <p className="hint">Nothing is due. Today’s check-in is complete.</p>
+          ) : (
+            <dl className="due">
+              {due.dailySteps.length > 0 && (
+                <div>
+                  <dt>Daily check-in</dt>
+                  <dd>{due.dailySteps.map((s) => STEP_TITLE[s]).join(', ')}</dd>
+                </div>
+              )}
+              {due.weekly.length > 0 && (
+                <div>
+                  <dt>Weekly check-in</dt>
+                  <dd>{due.weekly.map((id) => INDICATORS[id].label).join(', ')}</dd>
+                </div>
+              )}
+            </dl>
+          )}
           <div className="actions">
             <button type="button" className="btn" onClick={() => dispatch({ type: 'view', view: 'checkin' })}>
               {steps === 0 ? 'Start check-in' : steps < DAILY_STEPS.length ? 'Continue check-in' : 'Review today’s entries'}
