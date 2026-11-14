@@ -55,6 +55,11 @@ export function DaySummary(p: { all: Record<RegionId, Assessment> }) {
           <p>
             {steps} of {DAILY_STEPS.length} steps done today.
           </p>
+          <div className="actions">
+            <button type="button" className="btn" onClick={() => dispatch({ type: 'view', view: 'checkin' })}>
+              {steps === 0 ? 'Start check-in' : steps < DAILY_STEPS.length ? 'Continue check-in' : 'Review today’s entries'}
+            </button>
+          </div>
         </div>
       </div>
     </section>

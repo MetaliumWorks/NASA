@@ -188,6 +188,30 @@
   color: var(--muted);
 }
 
+/* ------------------------------------------------------------ a full-width screen */
+.page {
+  height: 100%;
+  overflow-y: auto;
+  padding: 28px max(40px, calc((100% - 1040px) / 2)) 48px;
+  background: var(--bg);
+  scrollbar-color: var(--line) transparent;
+}
+
+.page-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.page-head h2 {
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+
 /* ------------------------------------------------------------ report-style panel */
 .panel {
   display: flex;
