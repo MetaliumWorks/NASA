@@ -149,6 +149,38 @@ describe('mission day', () => {
     expect(reducer(base, { type: 'setMission', mission: 'moon' }).profile).toMatchObject({ mission: 'moon', missionDay: 30 });
   });
 
+  test('a shorter mission does not forget the day that was reached', () => {
+    const onMoon = reducer(base, { type: 'setMission', mission: 'moon' });
+    expect(onMoon.profile.missionDay).toBe(30);
+    expect(reducer(onMoon, { type: 'setMission', mission: 'station' }).profile.missionDay).toBe(47);
+    expect(reducer(onMoon, { type: 'setMission', mission: 'mars' }).profile.missionDay).toBe(47);
+  });
+
+  test('days advanced after a mission change still count', () => {
+    let s: AppState = { ...base, profile: { ...base.profile, missionDay: 28 } };
+    s = reducer(s, { type: 'setMission', mission: 'moon' });
+    s = reducer(s, { type: 'advanceDay' });
+    expect(s.profile.missionDay).toBe(29);
+    expect(reducer(s, { type: 'setMission', mission: 'station' }).profile.missionDay).toBe(29);
+  });
+
+  test('the reached day survives a save and a load', () => {
+    const onMoon = reducer(base, { type: 'setMission', mission: 'moon' });
+    const storage = fakeStorage();
+    saveState(storage, onMoon);
+    const loaded = loadState(storage);
+    expect(loaded.profile.missionDay).toBe(30);
+    expect(reducer(loaded, { type: 'setMission', mission: 'station' }).profile.missionDay).toBe(47);
+  });
+
+  test('a damaged reached day in storage is dropped, not fatal', () => {
+    const raw = JSON.stringify({ ...base, profile: { ...base.profile, reachedDay: 'x' } });
+    const loaded = loadState(fakeStorage(raw));
+    expect(loaded.profile.missionDay).toBe(47);
+    expect(loaded.profile.reachedDay).toBeUndefined();
+    expect(loaded.profile.name).toBe(base.profile.name);
+  });
+
   test('resetDemo restores the starting profile and view', () => {
     let s = reducer(base, { type: 'saveStep', step: 'intake', values: { waterLiters: 2 } });
     s = reducer(s, { type: 'advanceDay' });

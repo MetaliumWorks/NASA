@@ -58,6 +58,11 @@ function updateToday(p: Profile, change: (entry: DayEntry) => DayEntry): Profile
   return { ...p, entries };
 }
 
+/** The furthest day the profile has reached, whatever the current mission shows. */
+function reached(p: Profile): number {
+  return Math.max(p.reachedDay ?? 0, p.missionDay);
+}
+
 function optionalText(current: string | undefined, incoming: string | undefined): string | undefined {
   if (incoming === undefined) return current;
   const trimmed = incoming.trim();
@@ -104,15 +109,18 @@ export function reducer(s: AppState, a: Action): AppState {
 
     case 'advanceDay': {
       const missionDay = Math.min(s.profile.missionDay + 1, MISSIONS[s.profile.mission].days);
-      return { ...s, profile: { ...s.profile, missionDay } };
+      return { ...s, profile: { ...s.profile, missionDay, reachedDay: Math.max(reached(s.profile), missionDay) } };
     }
 
     case 'resetDemo':
       return initialState();
 
     case 'setMission': {
-      const missionDay = Math.min(s.profile.missionDay, MISSIONS[a.mission].days);
-      return { ...s, profile: { ...s.profile, mission: a.mission, missionDay } };
+      // A shorter mission pulls the day back inside it; the day reached is kept, so going
+      // back to a longer mission does not lose it.
+      const reachedDay = reached(s.profile);
+      const missionDay = Math.min(reachedDay, MISSIONS[a.mission].days);
+      return { ...s, profile: { ...s.profile, mission: a.mission, missionDay, reachedDay } };
     }
 
     case 'planAdd': {
@@ -181,9 +189,14 @@ export function loadState(storage: Pick<Storage, 'getItem'>): AppState {
     if (!raw) return initialState();
     const data: unknown = JSON.parse(raw);
     if (!isObject(data) || !isProfile(data.profile)) return initialState();
-    const profile = data.profile;
+    const { reachedDay, ...profile } = data.profile;
     return {
-      profile: { ...profile, missionDay: Math.min(profile.missionDay, MISSIONS[profile.mission].days) },
+      profile: {
+        ...profile,
+        missionDay: Math.min(profile.missionDay, MISSIONS[profile.mission].days),
+        // Kept only when it is a real day; anything else is dropped rather than trusted.
+        ...(isDay(reachedDay) ? { reachedDay } : {}),
+      },
       view: VIEWS.includes(data.view as View) ? (data.view as View) : 'map',
       selectedRegion: REGION_ORDER.includes(data.selectedRegion as RegionId) ? (data.selectedRegion as RegionId) : null,
       showOrgans: data.showOrgans === true,

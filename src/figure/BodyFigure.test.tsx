@@ -4,7 +4,7 @@ import { REGION_ORDER } from '../content/regions';
 import type { RegionId, Status } from '../domain/types';
 import { StatusGlyph } from '../ui/StatusGlyph';
 import { BodyFigure, figureLabel } from './BodyFigure';
-import { ORGANS } from './layout';
+import { HOT_BONES, ORGANS } from './layout';
 import { Stars } from './Stars';
 
 const nominal = Object.fromEntries(REGION_ORDER.map((r) => [r, 'nominal'])) as Record<RegionId, Status>;
@@ -139,4 +139,41 @@ test('a status glyph always carries its word', () => {
 test('stars are decoration only', () => {
   const { container } = render(<Stars width={1160} height={660} dimFromX={520} />);
   expect(container.querySelector('canvas')).toHaveAttribute('aria-hidden', 'true');
+});
+
+const paintedAfter = (a: Element, b: Element) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+
+test('flagged bones are redrawn above nominal organ art and below flagged organs', () => {
+  const { container } = render(<BodyFigure statuses={flagged} selected={null} showOrgans onSelect={noop} />);
+  const overlay = container.querySelector('[data-testid="hot-bones"]');
+  expect(overlay).not.toBeNull();
+  expect(overlay!.querySelector('use[href="#FemurLeft"]')).not.toBeNull();
+  const thigh = container.querySelector('image[data-region="muscles"]')!; // nominal art that lies over the femur
+  const kidneys = container.querySelector('image[data-region="kidneys"]')!; // a flagged organ
+  expect(paintedAfter(thigh, overlay!)).toBe(true);
+  expect(paintedAfter(overlay!, kidneys)).toBe(true);
+});
+
+test('only flagged bones are redrawn', () => {
+  const some = render(<BodyFigure statuses={flagged} selected={null} showOrgans onSelect={noop} />);
+  expect(some.container.querySelectorAll('[data-testid="hot-bones"] use')).toHaveLength(HOT_BONES.bones!.length);
+  expect(some.container.querySelector('[data-testid="hot-bones"] use[href="#HumerusLeft"]')).toBeNull();
+  some.unmount();
+  const none = render(<BodyFigure statuses={nominal} selected={null} showOrgans onSelect={noop} />);
+  expect(none.container.querySelectorAll('[data-testid="hot-bones"] use')).toHaveLength(0);
+});
+
+test('the redrawn bones are decoration, not a second control', () => {
+  const { container } = render(<BodyFigure statuses={flagged} selected={null} showOrgans onSelect={noop} />);
+  const overlay = container.querySelector('[data-testid="hot-bones"]')!;
+  expect(overlay).toHaveAttribute('aria-hidden', 'true');
+  expect(overlay.querySelector('[role="button"], [tabindex]')).toBeNull();
+});
+
+test('a redrawn bone carries its own status, because a copy does not take the colour of the original', () => {
+  const statuses: Record<RegionId, Status> = { ...flagged, spine: 'warning' };
+  const { container } = render(<BodyFigure statuses={statuses} selected={null} showOrgans onSelect={noop} />);
+  const overlay = container.querySelector('[data-testid="hot-bones"]')!;
+  expect(overlay.querySelector('use[href="#FemurLeft"]')).toHaveClass('hot-caution');
+  expect(overlay.querySelector('use[href="#LumbarVertebrae"]')).toHaveClass('hot-warning');
 });
