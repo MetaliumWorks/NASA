@@ -1,0 +1,30 @@
+SOURCE: https://www.nasa.gov/reference/zero-t2/
+
+# Zero T2
+NASA astronaut Mark Vande Hei exercises on a treadmill aboard the International Space Station. The Zero T2 study aims to determine if exercise on a treadmill is necessary to preserve human health and performance during long-duration missions.
+Credit: NASA
+# Description
+This study examines how the body is affected by long-duration spaceflight if astronauts exercise on devices other than a treadmill for the entirety of their flight. Historically, astronauts aboard the International Space Station have used a treadmill, along with other exercise devices, to ensure they are fit enough to complete their duties.
+However, future long-duration missions, including those to the Moon and Mars, will take place on smaller spacecrafts. Exercise devices will need to be more compact and lightweight than treadmills, which take up a lot of space, power, and resources. This study investigates whether removing the treadmill during long-duration spaceflight affects crew member strength, fitness, bone health, and balance.
+# Impact
+This work will help inform exercise device development, training regimens, and protocols for future deep-space missions.
+Type of study: Flight
+Formal project title: Exploration Exercise Treadmill Requirements
+## Top Risks Addressed
+### Risk of Spaceflight-Induced Bone Changes
+Read More
+### Risk of Cardiovascular Adaptions
+Read More
+[image: Furukawa wears a black t-shirt and shorts and tennis shoes. His feet are on a black panel and he is squatting, holding on to a silver bar behind his shoulders. The bar is attached to blue metal poles on either side of him.]
+### Risk of Cardiorespiratory and Musculoskeletal Fitness
+Read More
+## Related Content
+[image: NASA’s SpaceX Crew-9 commander Nick Hague is pictured in his flight suit during training at SpaceX headquarters in Hawthorne, California. Hague will perform human health and performance research on the International Space Station as part of his mission (Credit: SpaceX).]
+### NASA Astronaut Nick Hague Boosts Human Health Research in Space
+Read More
+[image: A volunteer from NASA’s Artemis Extravehicular Activity training group moves a 30-pound object through a boulder field while in a spacesuit connected to NASA’s Active Response Gravity Offload System, or ARGOS.]
+### New Tests Evaluate Mission Readiness of Astronauts Upon Landing
+Read More
+[image: Flight Engineer Drew Morgan strikes a pose (flexing his muscles) in the Quest Airlock (A/L) during preparations for Extravehicular Activity 61 (EVA 61). Photo was taken using an EVA camera.]
+### The Human Body in Space
+Read More

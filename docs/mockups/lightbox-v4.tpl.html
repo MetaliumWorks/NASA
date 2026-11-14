@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Işıklı Kutu, 4. tur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+html{background:#E4E6EA}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#15171c;padding:28px 24px 80px;line-height:1.5}
+.page{max-width:1160px;margin:0 auto}
+.page>h1{font-size:26px;font-weight:650;margin-bottom:6px}
+.page>.lead{font-size:15px;color:#3f444e;max-width:86ch;margin-bottom:20px}
+.fit{position:relative;overflow:hidden;border-radius:12px}
+.stage{width:1160px;height:660px;transform-origin:0 0;position:relative;overflow:hidden}
+.notes{margin-top:16px;font-size:14.5px;color:#3f444e;max-width:94ch;display:grid;gap:6px}
+.notes b{color:#15171c}
+
+@keyframes pulse{0%{transform:scale(1);opacity:.9}75%,100%{transform:scale(2.3);opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.6s cubic-bezier(.16,1,.3,1) infinite;pointer-events:none}
+
+.d2{--bg:oklch(0.205 0.022 238);--plate:oklch(0.165 0.02 238);--dark:oklch(0.2 0.02 238);--bone:oklch(0.9 0.02 228);--text:oklch(0.95 0.008 230);--muted:oklch(0.77 0.022 232);--line:oklch(0.37 0.025 236);--caution:oklch(0.87 0.16 93);--warning:oklch(0.73 0.19 30);
+  background:var(--plate);color:var(--text);font-family:"Instrument Sans",system-ui,sans-serif;font-size:15.5px;line-height:1.5;display:grid;grid-template-columns:520px 640px}
+.d2-stars{position:absolute;inset:0;width:1160px;height:660px;pointer-events:none}
+.d2-plate{position:relative;background:radial-gradient(380px 480px at 52% 46%,oklch(0.3 0.032 236 / .75),transparent 80%);border-right:1px solid var(--line)}
+.d2-svg{position:relative;display:block;width:520px;height:660px}
+.d2-svg text{font-family:"Instrument Sans",sans-serif;fill:var(--text)}
+.d2-svg .sub{font-family:"Martian Mono",monospace;font-size:15.5px}
+/* bones: every top-level piece of the drawing is re-toned like film */
+#layer3 > *{filter:url(#xr)}
+#layer3 > .hot{filter:url(#xc)}
+#skel{filter:drop-shadow(0 0 5px oklch(0.85 0.04 230 / .35))}
+.organ{filter:url(#xo);opacity:.5;transition:opacity .16s ease-out;cursor:pointer}
+.organ:hover{opacity:.9}
+.organ.warn{filter:url(#xw) drop-shadow(0 0 6px oklch(0.73 0.19 30 / .85));opacity:1;clip-path:inset(0 0 61% 0);animation:throb 2.6s ease-in-out infinite}
+@keyframes throb{0%,100%{opacity:.78}50%{opacity:1}}
+.d2[data-organs="off"] #organs{display:none}
+#body{filter:url(#skin)}
+.d2-toggle{position:absolute;top:25px;left:62px;display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.d2-toggle input{appearance:none;-webkit-appearance:none;width:16px;height:16px;margin:0;border:1.5px solid var(--bone);border-radius:4px;display:grid;place-items:center;cursor:pointer;transition:background-color .12s ease-out}
+.d2-toggle input::after{content:"";width:8px;height:4px;border-left:2px solid var(--dark);border-bottom:2px solid var(--dark);transform:translateY(-1px) rotate(-45deg) scale(0);transition:transform .14s cubic-bezier(.16,1,.3,1)}
+.d2-toggle input:checked{background:var(--bone)}
+.d2-toggle input:checked::after{transform:translateY(-1px) rotate(-45deg) scale(1)}
+.d2-toggle input:focus-visible{outline:2px solid var(--caution);outline-offset:2px}
+.d2-ov{position:absolute;font-family:"Martian Mono",monospace;font-size:11px;line-height:1.75;color:var(--muted)}
+.d2-ov.tl{top:20px;left:22px}.d2-ov.tr{top:20px;right:22px}.d2-ov.bl{bottom:18px;left:22px}.d2-ov.br{bottom:18px;right:22px;text-align:right}
+.d2-sidemark{font-weight:500;font-size:13px;color:var(--bone);border:1.5px solid var(--bone);width:26px;height:26px;display:grid;place-items:center;border-radius:3px}
+.d2-read{position:relative;background:oklch(0.205 0.022 238 / .9);padding:26px 40px 22px;display:flex;flex-direction:column;gap:12px}
+.d2-head{display:flex;align-items:baseline;gap:16px}
+.d2-head h3{font-size:40px;font-weight:600;line-height:1.05;letter-spacing:-0.015em}
+.d2-flag{display:inline-flex;align-items:center;gap:8px;color:var(--caution);font-weight:600;font-size:16px}
+.d2-head .right{margin-left:auto;font-family:"Martian Mono",monospace;font-size:11px;color:var(--muted)}
+.d2-sec{display:grid;grid-template-columns:138px 1fr;gap:6px 20px;padding-top:11px;border-top:1px solid var(--line)}
+.d2-sec h4{font-size:15.5px;font-weight:600;color:var(--bone)}
+.d2-sec p{max-width:50ch}
+.d2-sec a{color:var(--bone);text-underline-offset:3px}
+.d2-dl div{display:flex;justify-content:space-between;gap:16px;padding:1px 0}
+.d2-dl dd{font-family:"Martian Mono",monospace;font-size:13px;color:var(--bone);white-space:nowrap}
+.d2-find{display:flex;gap:18px;align-items:flex-end;margin-top:10px}
+.d2-bars{display:flex;align-items:flex-end;gap:5px;height:40px;border-top:1px dashed var(--muted)}
+.d2-bars i{width:17px;background:var(--bone);border-radius:2px 2px 0 0;display:block}
+.d2-days{display:flex;gap:5px;font-family:"Martian Mono",monospace;font-size:9.5px;color:var(--muted);margin-top:3px}
+.d2-days span{width:17px;text-align:center}
+.d2-chartcap{color:var(--muted);font-size:13.5px;line-height:1.4;max-width:26ch}
+.d2-hint{color:var(--muted);margin-bottom:6px}
+.d2-todo{list-style:none;padding:0;display:grid;gap:5px}
+.d2-todo label{display:grid;grid-template-columns:18px 1fr;gap:12px;align-items:start;cursor:pointer}
+.d2-todo input{appearance:none;-webkit-appearance:none;width:18px;height:18px;margin:3px 0 0;border:1.6px solid var(--bone);border-radius:4px;background:transparent;display:grid;place-items:center;cursor:pointer;transition:background-color .12s ease-out}
+.d2-todo input::after{content:"";width:9px;height:5px;border-left:2px solid var(--dark);border-bottom:2px solid var(--dark);transform:translateY(-1px) rotate(-45deg) scale(0);transition:transform .14s cubic-bezier(.16,1,.3,1)}
+.d2-todo input:checked{background:var(--bone)}
+.d2-todo input:checked::after{transform:translateY(-1px) rotate(-45deg) scale(1)}
+.d2-todo input:focus-visible{outline:2px solid var(--caution);outline-offset:2px}
+.d2-todo input:not(:checked)+span{color:var(--muted)}
+.d2-actions{display:flex;gap:14px;align-items:center;margin-top:10px}
+.d2-btn{background:var(--bone);color:var(--dark);font:600 15px "Instrument Sans",sans-serif;border:0;border-radius:8px;padding:9px 16px;cursor:pointer}
+.d2-btn:disabled{opacity:.45;cursor:default}
+.d2-index{margin-top:auto;border-top:1px solid var(--line);padding-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:3px 18px;font-size:13.5px;color:var(--muted)}
+.d2-index span{display:flex;align-items:center;gap:8px}
+.d2-index .c{color:var(--caution)}.d2-index .w{color:var(--warning)}
+.d2-index svg{flex:none}
+@media (prefers-reduced-motion:reduce){.organ.warn{animation:none}.pulse{animation:none;opacity:0}.organ,.d2-todo input,.d2-todo input::after{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <h1>Işıklı Kutu, 4. tur</h1>
+  <p class="lead">Dört düzeltme: sağ kol sol kolla aynı duruşta, vücut dış hattı iskeletin kendisinden çıkarılıyor, organlar aynı çizerin ayrıntılı çizimlerinden geliyor ve sorun yokken görünmüyor, radyasyon halkası ortalandı. Figürün üstündeki “Show organs” kutusuyla bütün organları açabilirsiniz.</p>
+
+  <div class="fit"><div class="stage d2" id="stage" data-organs="off">
+    <canvas class="d2-stars" id="stars" width="1160" height="660" aria-hidden="true"></canvas>
+    <div class="d2-plate">
+      <svg class="d2-svg" viewBox="-161.9 -28 729.7 926.2" role="img" aria-labelledby="d2t">
+        <title id="d2t">Body scan. Kidneys highlighted in red: warning. Spine, pelvis and thigh bones highlighted in yellow: caution. Other systems nominal.</title>
+        <defs>
+          <!--SKELETON_DEFS-->
+          <filter id="xr" color-interpolation-filters="sRGB" x="-5%" y="-5%" width="110%" height="110%">
+            <feColorMatrix type="matrix" values="0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0 0 0 1 0"/>
+            <feComponentTransfer>
+              <feFuncR type="table" tableValues="0.05 0.14 0.30 0.58 0.93"/>
+              <feFuncG type="table" tableValues="0.09 0.20 0.40 0.70 0.97"/>
+              <feFuncB type="table" tableValues="0.15 0.29 0.52 0.84 1.00"/>
+            </feComponentTransfer>
+          </filter>
+          <filter id="xc" color-interpolation-filters="sRGB" x="-5%" y="-5%" width="110%" height="110%">
+            <feColorMatrix type="matrix" values="0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0 0 0 1 0"/>
+            <feComponentTransfer>
+              <feFuncR type="table" tableValues="0.20 0.48 0.86 1.00 1.00"/>
+              <feFuncG type="table" tableValues="0.13 0.34 0.66 0.84 0.93"/>
+              <feFuncB type="table" tableValues="0.03 0.06 0.12 0.22 0.42"/>
+            </feComponentTransfer>
+          </filter>
+          <filter id="xo" color-interpolation-filters="sRGB">
+            <feColorMatrix type="matrix" values="0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0 0 0 1 0"/>
+            <feComponentTransfer>
+              <feFuncR type="table" tableValues="0.10 0.30 0.56 0.84"/>
+              <feFuncG type="table" tableValues="0.16 0.42 0.70 0.92"/>
+              <feFuncB type="table" tableValues="0.28 0.58 0.86 1.00"/>
+            </feComponentTransfer>
+          </filter>
+          <filter id="xw" color-interpolation-filters="sRGB">
+            <feColorMatrix type="matrix" values="0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0.30 0.59 0.11 0 0  0 0 0 1 0"/>
+            <feComponentTransfer>
+              <feFuncR type="table" tableValues="0.45 0.86 1.00 1.00"/>
+              <feFuncG type="table" tableValues="0.08 0.24 0.46 0.80"/>
+              <feFuncB type="table" tableValues="0.05 0.14 0.30 0.64"/>
+            </feComponentTransfer>
+          </filter>
+          <!-- body outline: grow the skeleton outwards, smooth it, then light the edge -->
+          <filter id="skin" x="-20" y="-10" width="476" height="862" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feMorphology in="SourceAlpha" operator="dilate" radius="6"/>
+            <feGaussianBlur stdDeviation="7"/>
+            <feComponentTransfer result="a"><feFuncA type="linear" slope="16" intercept="-7"/></feComponentTransfer>
+            <feMorphology in="a" operator="erode" radius="3"/>
+            <feGaussianBlur stdDeviation="3" result="inner"/>
+            <feComposite in="a" in2="inner" operator="out" result="rim"/>
+            <feFlood flood-color="rgb(96,128,160)" flood-opacity=".5"/>
+            <feComposite in2="a" operator="in" result="base"/>
+            <feFlood flood-color="rgb(190,214,236)" flood-opacity=".7"/>
+            <feComposite in2="rim" operator="in" result="edge"/>
+            <feMerge><feMergeNode in="base"/><feMergeNode in="edge"/></feMerge>
+          </filter>
+        </defs>
+
+        <ellipse cx="203" cy="420" rx="214" ry="424" fill="none" style="stroke:var(--bone)" stroke-width="1.3" stroke-dasharray="3 8" opacity=".38"/>
+
+        <!-- body outline: the skeleton itself plus muscle bulk, turned into one shape by the filter -->
+        <g id="body" fill="#000" stroke="#000" stroke-linecap="round" stroke-linejoin="round">
+          <use href="#layer3"/>
+          <ellipse cx="203" cy="66" rx="38" ry="50" stroke="none"/>
+          <line x1="203" y1="112" x2="203" y2="150" stroke-width="30"/>
+          <path d="M186 124 L220 124 L286 162 L120 162 Z" stroke-width="10"/>
+          <line x1="281" y1="178" x2="320" y2="306" stroke-width="34"/><line x1="125" y1="178" x2="86" y2="306" stroke-width="34"/>
+          <line x1="320" y1="306" x2="350" y2="406" stroke-width="22"/><line x1="86" y1="306" x2="56" y2="406" stroke-width="22"/>
+          <ellipse cx="203" cy="216" rx="66" ry="76" stroke="none"/>
+          <ellipse cx="203" cy="302" rx="57" ry="60" stroke="none"/>
+          <ellipse cx="203" cy="378" rx="72" ry="46" stroke="none"/>
+          <path d="M206 404 L274 372 L252 590 L210 590 Z" stroke-width="8"/><path d="M200 404 L132 372 L154 590 L196 590 Z" stroke-width="8"/>
+          <path d="M210 590 L252 590 L240 760 L216 760 Z" stroke-width="6"/><path d="M196 590 L154 590 L166 760 L190 760 Z" stroke-width="6"/>
+          <ellipse cx="234" cy="654" rx="22" ry="56" stroke="none"/><ellipse cx="172" cy="654" rx="22" ry="56" stroke="none"/>
+        </g>
+
+        <g id="skel"><!--SKELETON--></g>
+
+        <!-- organs: hidden unless "Show organs" is ticked -->
+        <g id="organs">
+<!--ORGANS-->
+        </g>
+
+        <!-- kidneys: warning, shown where they are -->
+        <g id="kidneys">
+<!--KIDNEYS-->
+        </g>
+
+        <!-- callouts -->
+        <g fill="none" stroke-linecap="round">
+          <g style="stroke:var(--dark)" stroke-width="4.6"><line x1="252" y1="289" x2="350" y2="289"/><line x1="150" y1="540" x2="106" y2="540"/></g>
+          <g style="stroke:var(--bone)" stroke-width="1.7"><line x1="252" y1="289" x2="350" y2="289"/><line x1="150" y1="540" x2="106" y2="540"/></g>
+        </g>
+        <text x="358" y="284" font-size="24" font-weight="600">Kidneys</text>
+        <text class="sub" x="358" y="309" style="fill:var(--warning)">warning</text>
+        <text x="98" y="535" text-anchor="end" font-size="24" font-weight="600">Bones</text>
+        <text class="sub" x="98" y="560" text-anchor="end" style="fill:var(--caution)">caution</text>
+      </svg>
+      <label class="d2-toggle"><input type="checkbox" id="showorgans">Show organs</label>
+      <div class="d2-ov tl"><div class="d2-sidemark">R</div></div>
+      <div class="d2-ov tr"><div class="d2-sidemark">L</div></div>
+      <div class="d2-ov bl">Crew 03 · simulated<br>Flight day 047 / 180<br>Baseline L-30</div>
+      <div class="d2-ov br">12 systems<br>2 flagged<br>Radiation logged</div>
+    </div>
+    <div class="d2-read">
+      <div class="d2-head">
+        <h3>Bones</h3>
+        <span class="d2-flag"><svg width="15" height="14" viewBox="0 0 16 15" aria-hidden="true"><path d="M8 1 L15 14 L1 14 Z" fill="currentColor"/></svg>Caution</span>
+        <span class="right">Check-in 3 of 5 · streak 12 d</span>
+      </div>
+      <div class="d2-sec">
+        <h4>Findings</h4>
+        <div>
+          <dl class="d2-dl">
+            <div><dt>Resistive exercise this week</dt><dd>6.5 of 10.5 h</dd></div>
+            <div><dt>Expected density loss by day 47</dt><dd>1.6–2.4%</dd></div>
+          </dl>
+          <div class="d2-find">
+            <div>
+              <div class="d2-bars" aria-hidden="true"><i style="height:40px"></i><i style="height:27px"></i><i style="height:13px"></i><i style="height:40px"></i><i style="height:27px"></i><i style="height:2px"></i><i style="height:27px"></i></div>
+              <div class="d2-days" aria-hidden="true"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+            </div>
+            <span class="d2-chartcap">Hours per day, Monday to Sunday. The dashed line is the 1.5 h target.</span>
+          </div>
+        </div>
+      </div>
+      <div class="d2-sec">
+        <h4>Impression</h4>
+        <p>Weight-bearing bones like the spine and hips lose on average 1% to 1.5% of their density each month in space. <a href="#" onclick="return false">NASA HRP, Bone Changes</a></p>
+      </div>
+      <div class="d2-sec">
+        <h4>Recommendation</h4>
+        <div>
+          <p class="d2-hint">Tick what you will do today.</p>
+          <ul class="d2-todo" id="todo">
+            <li><label><input type="checkbox" checked><span>Do 1.5 h of resistance and aerobic exercise.</span></label></li>
+            <li><label><input type="checkbox" checked><span>Drink to plan. Calcium leaving bone raises kidney-stone risk.</span></label></li>
+            <li><label><input type="checkbox"><span>Add Bones to the next ground report.</span></label></li>
+          </ul>
+          <div class="d2-actions"><button class="d2-btn" id="plan" type="button">Add 2 to today's plan</button></div>
+        </div>
+      </div>
+      <div class="d2-index">
+        <span><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Brain, mind &amp; sleep</span>
+        <span><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Eyes</span>
+        <span><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Inner ear &amp; balance</span>
+        <span><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Heart &amp; vessels</span>
+        <span><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Lungs &amp; oxygen</span>
+        <span><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Blood &amp; immunity</span>
+        <span class="c"><svg width="11" height="11" viewBox="0 0 12 12"><path d="M6 1 L11.5 11 L.5 11 Z" fill="currentColor"/></svg>Bones</span>
+        <span><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Spine</span>
+        <span><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Muscles</span>
+        <span><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Digestion &amp; nutrition</span>
+        <span class="w"><svg width="11" height="11" viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" rx="1.5" fill="currentColor"/></svg>Kidneys</span>
+        <span><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Radiation</span>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="notes">
+    <p><b>Kemikler ve organlar</b> Wikimedia Commons'taki kamu malı çizimlerden: iskelet Mariana Ruiz Villarreal'in, organlar ve etiketsiz sürüm Mikael Häggström'ün. <b>Vücut dış hattı</b> ayrı bir çizim değil; iskeletin kendisi dışa doğru büyütülüp yumuşatılarak elde ediliyor, bu yüzden kemiklere her yerde oturuyor.</p>
+    <p>Sağ kol, sol kolun aynası. Özgün çizimde sağ ön kol avuç içi arkaya dönük çizilmişti; anatomik olarak doğruydu ama iki kol tutarsız duruyordu.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ---------- page plumbing ---------- */
+  function fit(){
+    document.querySelectorAll('.fit').forEach(function(f){
+      var s = Math.min(1, f.clientWidth/1160);
+      f.firstElementChild.style.transform = 'scale('+s+')';
+      f.style.height = (660*s)+'px';
+    });
+  }
+  window.addEventListener('resize', fit); fit();
+
+  var todo = document.getElementById('todo'), plan = document.getElementById('plan');
+  function count(){
+    var n = todo.querySelectorAll('input:checked').length;
+    plan.textContent = n ? 'Add '+n+' to today’s plan' : 'Nothing selected';
+    plan.disabled = !n;
+  }
+  todo.addEventListener('change', count); count();
+
+  /* ---------- bones: mark the weight-bearing ones as "hot" ---------- */
+  (function(){
+    var layer = document.getElementById('layer3'); if(!layer) return;
+    ['LumbarVertebrae','ThoracicVertebrae','Sacrum','Coccyx','PelvicGirdle','FemurLeft','g3760','path481','path499','g447'].forEach(function(id){
+      var el = document.getElementById(id); if(el) el.classList.add('hot');
+    });
+    /* the right femur has no id in the source drawing: find it by where it sits */
+    Array.prototype.forEach.call(layer.children, function(el){
+      if(el.id) return;
+      var b = el.getBBox(); var cx = b.x + b.width/2, cy = b.y + b.height/2;
+      if(b.height > 150 && cx > 125 && cx < 205 && cy > 420 && cy < 540) el.classList.add('hot');
+    });
+  })();
+
+  /* ---------- stars ---------- */
+  (function(){
+    var c = document.getElementById('stars'), x = c.getContext('2d');
+    var seed = 20261114;
+    function rnd(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+    var tints = [[226,236,255],[226,236,255],[226,236,255],[226,236,255],[226,236,255],[226,236,255],[255,244,214],[255,244,214],[255,214,170],[170,200,255],[255,196,184]];
+    for(var i=0;i<190;i++){
+      var px = rnd()*1160, py = rnd()*660, big = Math.pow(rnd(),3), r = 0.45 + big*1.25;
+      var a = 0.22 + rnd()*0.55 + big*0.2, t = tints[Math.floor(rnd()*tints.length)];
+      if(px > 520) a *= 0.32;
+      if(big > 0.55 && px <= 520){
+        var g = x.createRadialGradient(px,py,0,px,py,r*5);
+        g.addColorStop(0,'rgba('+t[0]+','+t[1]+','+t[2]+',0.22)'); g.addColorStop(1,'rgba('+t[0]+','+t[1]+','+t[2]+',0)');
+        x.fillStyle = g; x.beginPath(); x.arc(px,py,r*5,0,6.2832); x.fill();
+      }
+      x.fillStyle = 'rgba('+t[0]+','+t[1]+','+t[2]+','+Math.min(a,0.95).toFixed(3)+')';
+      x.beginPath(); x.arc(px,py,r,0,6.2832); x.fill();
+    }
+  })();
+
+  var so = document.getElementById('showorgans'), stage = document.getElementById('stage');
+  function organs(){ stage.setAttribute('data-organs', so.checked ? 'on' : 'off'); }
+  so.addEventListener('change', organs);
+  if((location.hash||'').indexOf('organs=on') >= 0) so.checked = true;
+  organs();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+SOURCE: https://www.nasa.gov/reference/standard-measures/
+
+# Standard Measures
+[image: NASA astronaut Serena Auñón-Chancellor and ESA (European Space Agency) astronaut Alexander Gerst are photographed collecting samples aboard the International Space Station during Expedition 57.]
+NASA’s Alex Gerst conducts blood collection aboard the International Space Station, assisted by Serena Auñón-Chancellor and observed by Anne McClain. Blood collection is an important component of the Standard Measures investigation.
+Credit: NASA
+# Description
+This study collects a standardized set of measurements across multiple body systems and at various time points to provide a comprehensive snapshot of how spaceflight affects the human body and mind. It’s designed to offer insights into how isolation, confinement, weightlessness, and other space hazards affect human health and performance.
+To glean these insights, data for this research includes measurements of activity and light exposure (gathered through a wrist sensor), sleep reports, fluid samples to examine diet and nutrition, saliva to measure the function of the immune system, cognition tests to examine brain function, and sensorimotor tests to investigate balance and inner ear function. It also incorporates findings from a total body strength test and fecal samples that allow researchers to better understand how microorganism composition changes in space.
+# Impact
+This data, which is gathered before, during, and after a mission, will inform protocols designed to keep astronauts healthier as missions venture to the Moon, Mars, and beyond.
+Type of study: Flight
+Formal project title: Spaceflight Standard Measures
+## Top Risks Addressed
+### Risk of Behavioral Conditions and Psychiatric Disorders
+Read More
+### Risk of Inadequate Teamwork
+Read More
+### Risk from Inadequate Sleep and Irregular Schedules
+Read More
+### Risk of Inadequate Food and Nutrition
+Read More
+[image: Astronaut gives himself immunization]
+### Risk of Altered Immune System Responses
+Read More
+### Risk of Host-Microorganism Interactions
+Read More
+### Risk of Altered Sensorimotor and Vestibular Function
+Read More
+### Risk of Cardiovascular Adaptations
+Read More
+[image: Furukawa wears a black t-shirt and shorts and tennis shoes. His feet are on a black panel and he is squatting, holding on to a silver bar behind his shoulders. The bar is attached to blue metal poles on either side of him.]
+### Risk of Reduced Cardiorespiratory and Musculoskeletal Fitness
+Read More
+## Related Content
+[image: NASA astronaut Serena Auñón-Chancellor and ESA (European Space Agency) astronaut Alexander Gerst are photographed collecting samples aboard the International Space Station during Expedition 57.]
+### Spaceflight Standard Measures: Characterizing How Humans Adapt in Space
+Read More
+[image: Flight Engineer Drew Morgan strikes a pose (flexing his muscles) in the Quest Airlock (A/L) during preparations for Extravehicular Activity 61 (EVA 61). Photo was taken using an EVA camera.]
+### The Human Body in Space
+Read More
+[image: The four-person crew of the Polaris Dawn mission pictured wearing their SpaceX extravehicular activity suits]
+### NASA to Test Telemedicine, Gather Essential Health Data with Polaris Dawn Crew
+Read More

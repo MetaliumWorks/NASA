@@ -1,0 +1,27 @@
+SOURCE: https://www.nasa.gov/reference/spacecraft-occupant-protection/
+
+# Spacecraft Occupant Protection
+SpaceX Crew Dragon Freedom spacecraft pictured as it lands in October 2022 with four crew members aboard. Re-entry to Earth is a central focus of ongoing NASA research because it’s a time of elevated injury risk and crew discomfort.
+Credit: NASA
+# Description
+This study will assess injury risk during landing by surveying crew members about any discomfort they may experience during re-entry to Earth and combining that information with sensor data from the spacecraft. This work specifically focuses on landing because it’s the most dynamic event of flight missions.
+# Impact
+This information will influence future simulations and models to improve predictive injury work and help NASA design re-entry protocols and standards to protect crews as missions venture to the Moon, Mars, and beyond.
+Type of study: Flight
+Formal project title: Spacecraft Occupant Risk
+## Top Risk Addressed
+### Risk of injury from dynamic loads
+Read More
+## Related Content
+[image: The four-person crew of the Polaris Dawn mission pictured wearing their SpaceX extravehicular activity suits]
+### NASA to Test Telemedicine, Gather Essential Health Data with Polaris Dawn Crew
+Read More
+[image: Flight Engineer Drew Morgan strikes a pose (flexing his muscles) in the Quest Airlock (A/L) during preparations for Extravehicular Activity 61 (EVA 61). Photo was taken using an EVA camera.]
+### The Human Body in Space
+Read More
+[image: A volunteer from NASA’s Artemis Extravehicular Activity training group moves a 30-pound object through a boulder field while in a spacesuit connected to NASA’s Active Response Gravity Offload System, or ARGOS.]
+### New Tests Evaluate Mission Readiness of Astronauts Upon Landing
+Read More
+[image: NASA’s SpaceX Crew-9 commander Nick Hague is pictured in his flight suit during training at SpaceX headquarters in Hawthorne, California. Hague will perform human health and performance research on the International Space Station as part of his mission (Credit: SpaceX).]
+### NASA Astronaut Nick Hague Boosts Human Health Research in Space
+Read More
