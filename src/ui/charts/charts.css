@@ -1,0 +1,76 @@
+/* Hand-drawn charts: bone for the data, muted for axis and baseline. */
+.chart {
+  display: block;
+}
+
+.trend {
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+}
+
+.chart-line {
+  fill: none;
+  stroke: var(--bone);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart-dot,
+.chart-bar,
+.chart-floor {
+  fill: var(--bone);
+}
+
+.chart-baseline {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
+.chart-value {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  fill: var(--bone);
+}
+
+.chart-axis {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  fill: var(--muted);
+}
+
+.chart-empty {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 13.5px;
+  max-width: 340px;
+}
+
+.strip {
+  display: flex;
+  gap: 2px;
+}
+
+.strip-cell {
+  width: 7px;
+  height: 14px;
+  border-radius: 1.5px;
+  border: 1px solid var(--line);
+}
+
+.strip-cell[data-on='true'] {
+  background: var(--bone);
+  border-color: var(--bone);
+}
+
+.strip-cell[data-before='true'] {
+  border-style: dotted;
+  opacity: 0.45;
+}

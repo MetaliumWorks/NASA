@@ -2,6 +2,7 @@ import { INDICATORS } from '../content/indicators';
 import { REGIONS } from '../content/regions';
 import { SYMPTOMS } from '../content/symptoms';
 import { EXERCISE_TARGET_PER_DAY, THRESHOLDS } from '../content/thresholds';
+import { formatValue, num } from './format';
 import { entryFor, mean, recent, valuesFor } from './series';
 import type { IndicatorId, Profile, RegionId, Status } from './types';
 
@@ -36,21 +37,13 @@ export function worst(a: Status, b: Status): Status {
   return RANK[a] >= RANK[b] ? a : b;
 }
 
-/** One decimal at most, without a trailing ".0". */
-export function num(v: number): string {
-  return Number(v.toFixed(1)).toString();
-}
-
 function pct(fraction: number): string {
   return `${(Math.abs(fraction) * 100).toFixed(1)}%`;
 }
 
 /** A value with its unit, worded for the indicator's kind of scale. */
 export function withUnit(id: IndicatorId, v: number): string {
-  const unit = INDICATORS[id].unit;
-  if (unit === '1–5') return `${num(v)} of 5`;
-  if (unit === 'level') return `level ${num(v)}`;
-  return `${num(v)} ${unit}`;
+  return formatValue(v, INDICATORS[id].unit);
 }
 
 /**
