@@ -64,6 +64,15 @@ const BODY_VOLUME =
 const ALL_HOT_IDS = [...new Set(Object.values(HOT_BONES).flat())];
 const SPINE_IDS = new Set(HOT_BONES.spine);
 
+/** The status a bone shows: the worst of the regions that light it. */
+function boneStatus(id: string, statuses: Record<RegionId, Status>): Status {
+  let status: Status = 'nominal';
+  for (const region of REGION_ORDER) {
+    if (HOT_BONES[region]?.includes(id)) status = worst(status, statuses[region]);
+  }
+  return status;
+}
+
 const [VIEW_X, , VIEW_WIDTH] = VIEWBOX.split(' ').map(Number);
 /** Average advance of one character of the 24-unit label face, in drawing units. */
 const LABEL_CHAR = 12.6;
@@ -98,10 +107,7 @@ export function BodyFigure(props: BodyFigureProps) {
     for (const id of ALL_HOT_IDS) {
       const bone = root.querySelector(`[id="${id}"]`);
       if (!bone) continue;
-      let status: Status = 'nominal';
-      for (const region of REGION_ORDER) {
-        if (HOT_BONES[region]?.includes(id)) status = worst(status, statuses[region]);
-      }
+      const status = boneStatus(id, statuses);
       bone.classList.remove('hot-caution', 'hot-warning');
       if (status !== 'nominal') bone.classList.add(`hot-${status}`);
     }
@@ -112,6 +118,12 @@ export function BodyFigure(props: BodyFigureProps) {
   const skeletonMarkup = useMemo(() => ({ __html: SKELETON_MARKUP }), []);
 
   const visible = (region: RegionId) => showOrgans || statuses[region] !== 'nominal';
+  const shown = ORGANS.filter((o) => visible(o.region));
+  // Paint order inside the organ layer: quiet organ art, then the flagged bones again, then
+  // flagged organs. A flagged bone must stay readable under muscle or bowel art.
+  const quietOrgans = shown.filter((o) => statuses[o.region] === 'nominal');
+  const flaggedOrgans = shown.filter((o) => statuses[o.region] !== 'nominal');
+  const hotBones = ALL_HOT_IDS.map((id) => ({ id, status: boneStatus(id, statuses) })).filter((b) => b.status !== 'nominal');
 
   const onBoneClick = (e: MouseEvent<SVGGElement>) => {
     const piece = (e.target as Element).closest('#layer3 > *');
@@ -148,6 +160,22 @@ export function BodyFigure(props: BodyFigureProps) {
     return true;
   };
 
+  const organImage = (o: (typeof ORGANS)[number]) => (
+    <image
+      key={`${o.file}-${o.x}`}
+      className="organ"
+      href={organUrl(o.file)}
+      // A mirrored drawing is placed at its mirror position and flipped back about the y axis.
+      x={o.flip ? -(o.x + o.w) : o.x}
+      transform={o.flip ? 'scale(-1 1)' : undefined}
+      y={o.y}
+      width={o.w}
+      height={o.h}
+      style={o.clipBottom ? { clipPath: `inset(0 0 ${o.clipBottom * 100}% 0)` } : undefined}
+      {...button(o.region, firstOf(o.region))}
+    />
+  );
+
   const labelled = REGION_ORDER.filter((r) => CALLOUTS[r] && (statuses[r] !== 'nominal' || selected === r));
 
   return (
@@ -165,21 +193,16 @@ export function BodyFigure(props: BodyFigureProps) {
         <ellipse className="figure-ring-hit" cx="203" cy="420" rx="214" ry="424" {...button('radiation', true)} />
 
         <g data-testid="organs">
-          {ORGANS.filter((o) => visible(o.region)).map((o) => (
-            <image
-              key={`${o.file}-${o.x}`}
-              className="organ"
-              href={organUrl(o.file)}
-              // A mirrored drawing is placed at its mirror position and flipped back about the y axis.
-              x={o.flip ? -(o.x + o.w) : o.x}
-              transform={o.flip ? 'scale(-1 1)' : undefined}
-              y={o.y}
-              width={o.w}
-              height={o.h}
-              style={o.clipBottom ? { clipPath: `inset(0 0 ${o.clipBottom * 100}% 0)` } : undefined}
-              {...button(o.region, firstOf(o.region))}
-            />
-          ))}
+          {quietOrgans.map(organImage)}
+          {/* The same bones, drawn once more by reference. A copy does not take the film tone of
+              the original (the rules that give it are written for the skeleton's own tree), so
+              each copy carries its status and is toned in figure.css. */}
+          <g data-testid="hot-bones" className="hot-bones" aria-hidden="true">
+            {hotBones.map((b) => (
+              <use key={b.id} href={`#${b.id}`} className={`hot-${b.status}`} />
+            ))}
+          </g>
+          {flaggedOrgans.map(organImage)}
         </g>
 
         <g data-testid="markers">
