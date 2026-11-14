@@ -13,6 +13,7 @@
   --font-ui: 'Instrument Sans Variable', system-ui, sans-serif;
   --font-mono: 'Martian Mono', ui-monospace, monospace;
 
-  --plate-width: 520px;
-  --header-height: 48px;
+  /* The mockup's plate is 520 px wide; it grows on a wide screen so the figure fills the height. */
+  --plate-width: clamp(520px, 40vw, 720px);
+  --header-height: 78px;
 }
