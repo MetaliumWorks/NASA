@@ -1,0 +1,88 @@
+.sources .sec {
+  margin-top: 14px;
+}
+
+.sources-lead {
+  max-width: 78ch;
+  color: var(--muted);
+}
+
+.source-groups {
+  columns: 2;
+  column-gap: 36px;
+}
+
+.source-groups > div {
+  break-inside: avoid;
+  margin-bottom: 14px;
+}
+
+.sources h4 {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.source-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 3px;
+  font-size: 14.5px;
+}
+
+.notice {
+  font-weight: 600;
+  font-size: 17px;
+  margin-bottom: 4px;
+}
+
+.limits {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0 16px;
+  font-size: 14px;
+}
+
+.limits th,
+.limits td {
+  text-align: left;
+  padding: 5px 16px 5px 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.limits thead th {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.limits tbody th {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.limits td {
+  color: var(--muted);
+}
+
+.sources .actions .hint {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .source-groups {
+    columns: 1;
+  }
+
+  /* A table wider than the screen scrolls inside itself. */
+  .limits {
+    display: block;
+    overflow-x: auto;
+  }
+}

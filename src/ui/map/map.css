@@ -1,0 +1,360 @@
+/* Body map: film plate on the left, report on the right. From docs/mockups/lightbox-v4.tpl.html. */
+.map {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-columns: var(--plate-width) minmax(0, 1fr);
+  overflow: hidden;
+  background: var(--plate);
+}
+
+.plate {
+  position: relative;
+  min-height: 0;
+  background: radial-gradient(380px 480px at 52% 46%, oklch(0.3 0.032 236 / 0.75), transparent 80%);
+  border-right: 1px solid var(--line);
+}
+
+.toggle {
+  position: absolute;
+  top: 25px;
+  left: 62px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.toggle input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1.5px solid var(--bone);
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background-color 0.12s ease-out;
+}
+
+.toggle input::after {
+  content: '';
+  width: 8px;
+  height: 4px;
+  border-left: 2px solid var(--dark);
+  border-bottom: 2px solid var(--dark);
+  transform: translateY(-1px) rotate(-45deg) scale(0);
+  transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toggle input:checked {
+  background: var(--bone);
+}
+
+.toggle input:checked::after {
+  transform: translateY(-1px) rotate(-45deg) scale(1);
+}
+
+/* Film corner text. */
+.ov {
+  position: absolute;
+  font-size: 11px;
+  line-height: 1.75;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.ov-bl {
+  bottom: 18px;
+  left: 22px;
+}
+
+.ov-br {
+  bottom: 18px;
+  right: 22px;
+  text-align: right;
+}
+
+/* ------------------------------------------------------------ report side */
+.read {
+  position: relative;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: oklch(0.205 0.022 238 / 0.9);
+}
+
+.read-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 26px 40px 22px;
+  scrollbar-color: var(--line) transparent;
+}
+
+.index {
+  flex: none;
+  border-top: 1px solid var(--line);
+  padding: 10px 40px 14px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px 18px;
+}
+
+.index-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  padding: 2px 4px;
+  margin: 0 -4px;
+  font-size: 13.5px;
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+}
+
+/* The glyph comes after the name in reading order and before it on screen. */
+.index-item .glyph {
+  order: -1;
+}
+
+.index-item:hover,
+.index-item[aria-pressed='true'] {
+  color: var(--text);
+}
+
+.index-item[aria-pressed='true'] {
+  background: oklch(0.9 0.02 228 / 0.1);
+}
+
+.index-item[data-status='caution'] {
+  color: var(--caution);
+}
+
+.index-item[data-status='warning'] {
+  color: var(--warning);
+}
+
+/* ------------------------------------------------------------ findings */
+.findings {
+  display: grid;
+  gap: 12px;
+}
+
+.finding-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.finding-name {
+  font-weight: 500;
+}
+
+.finding-value {
+  font-size: 13px;
+  color: var(--bone);
+  white-space: nowrap;
+}
+
+.finding-delta {
+  color: var(--muted);
+}
+
+.finding-note {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.finding[data-status='caution'] .finding-note:first-of-type {
+  color: var(--caution);
+}
+
+.finding[data-status='warning'] .finding-note:first-of-type {
+  color: var(--warning);
+}
+
+.finding-flag {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.finding-flag b {
+  font-weight: 600;
+}
+
+.finding-flag .tag {
+  margin-left: 0;
+}
+
+.bars-row {
+  display: flex;
+  gap: 18px;
+  align-items: flex-end;
+  margin-top: 6px;
+}
+
+.strip-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.strip-count {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------ impression and recommendation */
+.impression {
+  display: grid;
+  gap: 8px;
+}
+
+.cause,
+.what {
+  color: var(--bone);
+  font-weight: 500;
+}
+
+.todo {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.todo-basis {
+  margin-left: 30px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.todo-basis .tag {
+  margin: 0 8px 0 0;
+}
+
+/* ------------------------------------------------------------ day summary */
+.flag-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.flag-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 16px;
+  align-items: baseline;
+  background: oklch(0.9 0.02 228 / 0.05);
+  border: 1px solid var(--control);
+  border-radius: 8px;
+  padding: 9px 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.flag-item:hover {
+  border-color: var(--bone);
+}
+
+.flag-name {
+  font-weight: 600;
+  font-size: 16.5px;
+}
+
+.flag-why {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.due {
+  display: grid;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.due div {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.due dt {
+  color: var(--muted);
+}
+
+.due dd {
+  margin: 0;
+}
+
+.plan-count {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.emphasised .tag {
+  margin: 0;
+}
+
+/* Narrow screens: the figure on top, the report under it, and the page scrolls as one. */
+@media (max-width: 960px) {
+  .map {
+    grid-template-columns: minmax(0, 1fr);
+    overflow-y: auto;
+  }
+
+  .plate {
+    /* The drawing is 729.7 by 926.2 units. */
+    height: min(127vw, 660px);
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .read {
+    min-height: auto;
+  }
+
+  .read-scroll {
+    overflow: visible;
+    padding: 22px 16px;
+  }
+
+  .index {
+    padding: 10px 16px 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .due div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+
+.limits-note {
+  margin: 2px 0 0;
+  font-size: 13px;
+}

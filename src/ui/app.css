@@ -1,0 +1,360 @@
+/* Shell and the controls shared by every screen. */
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+/* ------------------------------------------------------------ header */
+.header {
+  flex: none;
+  height: var(--header-height);
+  display: flex;
+  flex-direction: column;
+  background: var(--plate);
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  z-index: 2;
+}
+
+.header-top {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 22px;
+  min-width: 0;
+}
+
+.brand {
+  font-size: 16.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+}
+
+.mission-button[aria-current='page'] {
+  border-color: var(--bone);
+}
+
+.header-status {
+  margin-left: auto;
+  display: flex;
+  gap: 18px;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.header-nav {
+  display: flex;
+  gap: 2px;
+  padding: 0 14px;
+  overflow-x: auto;
+}
+
+.tab {
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 6px 10px 7px;
+  font-size: 14px;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab[aria-current='page'] {
+  color: var(--text);
+  border-bottom-color: var(--bone);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------ small parts */
+.tag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.7;
+  color: var(--muted);
+  white-space: nowrap;
+  vertical-align: 1px;
+}
+
+.tag-simulated {
+  margin-left: 0;
+  border-color: var(--caution);
+  color: var(--caution);
+}
+
+.btn {
+  background: var(--bone);
+  color: var(--dark);
+  font: 600 15px var(--font-ui);
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 16px;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.btn-quiet {
+  background: none;
+  color: var(--bone);
+  border: 1px solid var(--control);
+  font-weight: 500;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.btn-quiet:hover:not(:disabled) {
+  border-color: var(--bone);
+}
+
+.source {
+  font-size: 0.84em;
+  color: var(--muted);
+  text-underline-offset: 3px;
+}
+
+.source:hover {
+  color: var(--bone);
+}
+
+/* A button that reads as a link inside running text. */
+.linklike {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--bone);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* Tick boxes, as in the approved mockup. */
+.check {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 12px;
+  align-items: start;
+  cursor: pointer;
+}
+
+.check input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 3px 0 0;
+  border: 1.6px solid var(--bone);
+  border-radius: 4px;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background-color 0.12s ease-out;
+}
+
+.check input::after {
+  content: '';
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid var(--dark);
+  border-bottom: 2px solid var(--dark);
+  transform: translateY(-1px) rotate(-45deg) scale(0);
+  transition: transform 0.14s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.check input:checked {
+  background: var(--bone);
+}
+
+.check input:checked::after {
+  transform: translateY(-1px) rotate(-45deg) scale(1);
+}
+
+.check input:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.check input:not(:checked) + span {
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------ a full-width screen */
+.page {
+  height: 100%;
+  overflow-y: auto;
+  padding: 28px max(40px, calc((100% - 1040px) / 2)) 48px;
+  background: var(--bg);
+  scrollbar-color: var(--line) transparent;
+}
+
+.page-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.page-head h2 {
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+
+/* ------------------------------------------------------------ report-style panel */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.panel-head h2 {
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+
+.panel-flag .glyph {
+  font-size: 16px;
+}
+
+.panel-meta {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.panel-total {
+  color: var(--muted);
+}
+
+.panel-total .mono {
+  color: var(--bone);
+  font-size: 14px;
+}
+
+.panel-back {
+  margin-left: auto;
+  align-self: center;
+}
+
+.sec {
+  display: grid;
+  grid-template-columns: 138px minmax(0, 1fr);
+  gap: 6px 20px;
+  padding-top: 11px;
+  border-top: 1px solid var(--line);
+}
+
+.sec h3 {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--bone);
+}
+
+.sec p {
+  max-width: 62ch;
+}
+
+.hint {
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.lead {
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.caption {
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.4;
+  max-width: 30ch;
+}
+
+.actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+/* ------------------------------------------------------------ narrow screens
+   The target is a laptop or a projector (1280 px and up). Below 960 px nothing may
+   overflow sideways: the header wraps and full-width screens lose their side margins. */
+@media (max-width: 960px) {
+  .header {
+    height: auto;
+  }
+
+  .header-top {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    padding: 10px 16px 4px;
+  }
+
+  .header-status {
+    order: 5;
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: wrap;
+    gap: 2px 16px;
+  }
+
+  .header-top > .btn-quiet:last-child {
+    margin-left: auto;
+  }
+
+  .header-nav {
+    padding: 0 8px;
+  }
+
+  .page {
+    padding: 22px 16px 40px;
+  }
+
+  .page-head h2,
+  .panel-head h2 {
+    font-size: 32px;
+  }
+
+  .sec {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

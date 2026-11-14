@@ -1,0 +1,95 @@
+.pager {
+  margin-left: auto;
+  align-self: center;
+  display: flex;
+  gap: 8px;
+}
+
+.log {
+  margin-top: 12px;
+  display: grid;
+  gap: 4px;
+  max-width: 760px;
+}
+
+/* Name column, the 30-cell strip (30 x 7 px and 29 gaps of 2 px), count column. */
+.log-scale,
+.log-row {
+  display: grid;
+  grid-template-columns: 220px 268px 70px;
+  gap: 16px;
+  align-items: center;
+}
+
+.log-scale {
+  font-size: 9.5px;
+  color: var(--muted);
+}
+
+.log-scale span:first-child {
+  grid-column: 2;
+}
+
+.log-scale span:last-child {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+}
+
+.log-group {
+  border-top: 1px solid var(--line);
+  padding: 8px 0 6px;
+}
+
+.log-group h3 {
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--bone);
+  margin-bottom: 4px;
+}
+
+.log-row {
+  padding: 3px 0;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+
+.log-row[data-any='true'] {
+  color: var(--text);
+}
+
+.log-count {
+  font-size: 11px;
+  color: var(--bone);
+}
+
+.log-other {
+  margin-top: 16px;
+}
+
+.log-notes {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 3px;
+}
+
+@media (max-width: 760px) {
+  .log-scale {
+    display: none;
+  }
+
+  .log-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 12px;
+  }
+
+  .log-row .strip {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .pager {
+    margin-left: 0;
+  }
+}

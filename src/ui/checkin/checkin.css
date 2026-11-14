@@ -1,0 +1,325 @@
+/* Check-in: a calm form on the film background. */
+.steps {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.steps-item {
+  background: none;
+  border: 1px solid var(--control);
+  border-radius: 999px;
+  padding: 5px 12px 5px 8px;
+  font-size: 14px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.steps-item:hover {
+  color: var(--text);
+}
+
+.steps-item[aria-current='step'] {
+  border-color: var(--bone);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.steps-n {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: oklch(0.9 0.02 228 / 0.12);
+  font-size: 10.5px;
+}
+
+.steps-item .tag {
+  margin-left: 6px;
+}
+
+.step {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.step h3 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 36px;
+}
+
+.field label,
+.scale-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.unit {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.field input[type='text'],
+.field textarea {
+  width: 100%;
+  max-width: 220px;
+  background: oklch(0.9 0.02 228 / 0.06);
+  border: 1.5px solid var(--control);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 15px;
+}
+
+.field textarea,
+.field-wide input[type='text'] {
+  max-width: 560px;
+  font-family: var(--font-ui);
+  resize: vertical;
+}
+
+.field input[type='text']:hover,
+.field textarea:hover {
+  border-color: var(--muted);
+}
+
+.field input[aria-invalid='true'] {
+  border-color: var(--warning);
+}
+
+.field-error {
+  color: var(--warning);
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.field-error::before {
+  content: '■ ';
+  font-size: 0.7em;
+  vertical-align: 2px;
+}
+
+.field-help {
+  margin-top: 6px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--muted);
+  max-width: 52ch;
+}
+
+.field-why {
+  margin-top: 2px;
+}
+
+.field-wide {
+  margin-top: 18px;
+}
+
+/* 1 to 5 as five round choices. */
+.scale-options {
+  display: flex;
+  gap: 8px;
+}
+
+.scale-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.scale-option input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.scale-option span {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid var(--control);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--muted);
+  transition: background-color 0.12s ease-out;
+}
+
+.scale-option:hover span {
+  border-color: var(--muted);
+}
+
+.scale-option input:checked + span {
+  background: var(--bone);
+  border-color: var(--bone);
+  color: var(--dark);
+  font-weight: 500;
+}
+
+.scale-option input:focus-visible + span {
+  outline: 2px solid var(--caution);
+  outline-offset: 2px;
+}
+
+/* Symptoms, grouped by system. */
+.symptom-groups {
+  columns: 2;
+  column-gap: 36px;
+}
+
+.symptom-group {
+  break-inside: avoid;
+  border: 0;
+  border-top: 1px solid var(--line);
+  padding: 10px 0 14px;
+  margin: 0;
+  min-width: 0;
+}
+
+.symptom-group legend {
+  padding: 0 10px 0 0;
+  font-weight: 600;
+  color: var(--bone);
+}
+
+.symptom {
+  margin-top: 8px;
+}
+
+.symptom-basis {
+  margin-left: 30px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.tag-urgent {
+  margin: 0;
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+/* ------------------------------------------------------------ weekly part and the two mini tests */
+.weekly-tests {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 36px;
+  margin-bottom: 20px;
+}
+
+.weekly-block h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.weekly-block .field-help {
+  margin: 0 0 8px;
+}
+
+.weekly-result {
+  font-size: 13px;
+  color: var(--bone);
+}
+
+.minitest {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: oklch(0.9 0.02 228 / 0.04);
+}
+
+.minitest-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.minitest-count {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.minitest-status {
+  min-height: 1.5em;
+  margin-top: 6px;
+  color: var(--caution);
+  font-size: 14px;
+}
+
+.minitest-result {
+  font-weight: 600;
+}
+
+.minitest kbd {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0 5px;
+}
+
+.reaction-pad {
+  width: 100%;
+  height: 132px;
+  border: 1.5px solid var(--control);
+  border-radius: 10px;
+  background: var(--plate);
+  color: var(--muted);
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.reaction-pad[data-phase='signal'] {
+  background: var(--bone);
+  border-color: var(--bone);
+  color: var(--dark);
+}
+
+.vision-stage {
+  height: 150px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--plate);
+  color: var(--text);
+}
+
+.vision-keys {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+@media (max-width: 760px) {
+  .fields,
+  .weekly-tests {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .symptom-groups {
+    columns: 1;
+  }
+}
