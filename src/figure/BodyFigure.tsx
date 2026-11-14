@@ -167,10 +167,12 @@ export function BodyFigure(props: BodyFigureProps) {
         <g data-testid="organs">
           {ORGANS.filter((o) => visible(o.region)).map((o) => (
             <image
-              key={o.file}
+              key={`${o.file}-${o.x}`}
               className="organ"
               href={organUrl(o.file)}
-              x={o.x}
+              // A mirrored drawing is placed at its mirror position and flipped back about the y axis.
+              x={o.flip ? -(o.x + o.w) : o.x}
+              transform={o.flip ? 'scale(-1 1)' : undefined}
               y={o.y}
               width={o.w}
               height={o.h}

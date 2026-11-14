@@ -30,6 +30,13 @@ const ORGAN_FILES = {
   image3706: 'stomach',
   'image2224-4': 'intestines',
   image6280: 'kidneys',
+  // Blood & immunity
+  'image2218-4': 'lymph-neck',
+  'image2339-8': 'lymph-axilla',
+  'image2395-5-7': 'spleen',
+  // Muscles. The drawing has one thigh and one lower leg; the other side is its mirror (layout.ts).
+  image3428: 'thigh',
+  image3399: 'leg',
 };
 
 const fail = (message) => {

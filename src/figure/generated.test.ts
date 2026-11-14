@@ -50,6 +50,22 @@ test('every organ file is an image of the kind its name says', () => {
   });
 });
 
+test('blood & immunity and muscles have drawings of their own', () => {
+  expect(ORGANS.filter((o) => o.region === 'immune').map((o) => o.file)).toEqual(['lymph-neck.gif', 'lymph-axilla.gif', 'lymph-axilla.gif', 'spleen.gif']);
+  expect(ORGANS.filter((o) => o.region === 'muscles').map((o) => o.file)).toEqual(['thigh.png', 'thigh.png', 'leg.png', 'leg.png']);
+});
+
+test('a drawing used on both sides of the body is mirrored on one of them', () => {
+  for (const file of ['thigh.png', 'leg.png', 'lymph-axilla.gif']) {
+    const pair = ORGANS.filter((o) => o.file === file);
+    expect(pair, file).toHaveLength(2);
+    expect(pair.filter((o) => o.flip), file).toHaveLength(1);
+    // The pair sits symmetrically about the midline of the skeleton (x = 203).
+    const centres = pair.map((o) => o.x + o.w / 2);
+    expect((centres[0] + centres[1]) / 2, file).toBeCloseTo(203, 0);
+  }
+});
+
 test('no organ file is left over or missing', () => {
   expect(readdirSync(DIR).sort()).toEqual([...new Set(ORGANS.map((o) => o.file))].sort());
   ORGANS.forEach((o) => expect(existsSync(`${DIR}/${o.file}`), o.file).toBe(true));

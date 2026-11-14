@@ -13,15 +13,26 @@ export interface OrganArt {
   h: number;
   /** Fraction of the image hidden from the bottom (the kidney drawing continues below the kidneys). */
   clipBottom?: number;
+  /** Mirrored left to right: the same drawing serves the other side of the body. */
+  flip?: boolean;
 }
 
 /** Placement of each organ drawing in skeleton coordinates. Order is paint order. */
 export const ORGANS: OrganArt[] = [
+  // Muscles first, so the organs of the trunk are drawn over the tops of the thighs.
+  { file: 'thigh.png', region: 'muscles', x: 128, y: 372, w: 72, h: 220 },
+  { file: 'thigh.png', region: 'muscles', x: 206, y: 372, w: 72, h: 220, flip: true },
+  { file: 'leg.png', region: 'muscles', x: 150, y: 590, w: 46, h: 175 },
+  { file: 'leg.png', region: 'muscles', x: 210, y: 590, w: 46, h: 175, flip: true },
   { file: 'brain.gif', region: 'brain', x: 170, y: 24, w: 66, h: 58 },
+  { file: 'lymph-neck.gif', region: 'immune', x: 170.4, y: 104.4, w: 69.1, h: 51.2 },
   { file: 'lungs.png', region: 'lungs', x: 144, y: 143, w: 119, h: 107 },
   { file: 'heart.png', region: 'heart', x: 177, y: 142, w: 59, h: 94 },
+  { file: 'lymph-axilla.gif', region: 'immune', x: 106.6, y: 183.5, w: 56.5, h: 73.4 },
+  { file: 'lymph-axilla.gif', region: 'immune', x: 242.9, y: 183.5, w: 56.5, h: 73.4, flip: true },
   { file: 'liver.png', region: 'digestion', x: 147.5, y: 235, w: 100, h: 70.5 },
   { file: 'stomach.png', region: 'digestion', x: 167, y: 233, w: 100, h: 83 },
+  { file: 'spleen.gif', region: 'immune', x: 219.7, y: 241.9, w: 42.3, h: 45.1 },
   { file: 'intestines.gif', region: 'digestion', x: 140, y: 290, w: 126, h: 114 },
   { file: 'kidneys.png', region: 'kidneys', x: 150.6, y: 265.5, w: 108.4, h: 155, clipBottom: 0.61 },
 ];
