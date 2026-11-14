@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import type { View } from '../state/store';
 import { CheckIn } from './checkin/CheckIn';
 import { MapScreen } from './map/MapScreen';
+import { Sources } from './sources/Sources';
 
 export interface Screen {
   view: View;
@@ -14,4 +15,5 @@ export interface Screen {
 export const SCREENS: Screen[] = [
   { view: 'map', label: 'Body map', render: () => <MapScreen /> },
   { view: 'checkin', label: 'Check-in', render: () => <CheckIn /> },
+  { view: 'sources', label: 'Sources', render: () => <Sources /> },
 ];
