@@ -1,0 +1,18 @@
+/* Values carried over from docs/mockups/lightbox-v4.tpl.html (.d2 block). */
+:root {
+  --bg: oklch(0.205 0.022 238);
+  --plate: oklch(0.165 0.02 238);
+  --dark: oklch(0.2 0.02 238);
+  --bone: oklch(0.9 0.02 228);
+  --text: oklch(0.95 0.008 230);
+  --muted: oklch(0.77 0.022 232);
+  --line: oklch(0.37 0.025 236);
+  --caution: oklch(0.87 0.16 93);
+  --warning: oklch(0.73 0.19 30);
+
+  --font-ui: 'Instrument Sans Variable', system-ui, sans-serif;
+  --font-mono: 'Martian Mono', ui-monospace, monospace;
+
+  --plate-width: 520px;
+  --header-height: 48px;
+}
