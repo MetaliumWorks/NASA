@@ -63,3 +63,74 @@
 .mission-none {
   color: var(--muted);
 }
+
+.setup-sec {
+  margin-top: 22px;
+}
+
+.newprofile .field input[type='text'],
+.newprofile select {
+  width: 100%;
+  max-width: 260px;
+}
+
+.newprofile select {
+  background: oklch(0.9 0.02 228 / 0.06);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font: inherit;
+  color: inherit;
+}
+
+.newprofile select option {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.newprofile-top {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 280px));
+  gap: 16px 28px;
+  margin-bottom: 16px;
+}
+
+.newprofile-top .field input[type='text'] {
+  font-family: var(--font-ui);
+}
+
+.baselines {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 0;
+  padding: 12px 0 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 24px;
+}
+
+.baselines legend {
+  padding: 0 10px 0 0;
+  font-weight: 600;
+  color: var(--bone);
+}
+
+.baselines .field label {
+  font-weight: 500;
+  font-size: 14.5px;
+}
+
+.baselines .field input[type='text'] {
+  max-width: 160px;
+}
+
+.newprofile-confirm {
+  margin-top: 16px;
+}
+
+.setup-reset {
+  font-size: 15px;
+  padding: 8px 16px;
+  border-radius: 8px;
+}

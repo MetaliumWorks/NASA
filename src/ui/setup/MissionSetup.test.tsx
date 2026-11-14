@@ -80,3 +80,89 @@ test('a region whose hazard the mission does not emphasise carries no note', () 
   renderApp(<MapScreen />, { selectedRegion: 'lungs' }); // hostile/closed environments: not on the station list
   expect(screen.queryByText('Emphasised on this mission')).toBeNull();
 });
+
+describe('a new profile', () => {
+  const form = () => within(screen.getByRole('form', { name: 'Start a new profile' }));
+  const start = () => userEvent.click(form().getByRole('button', { name: 'Start profile' }));
+
+  test('starts on day 1 with its baselines and without the simulated tag', async () => {
+    const { store } = renderSetup();
+    await userEvent.type(form().getByLabelText('Name'), 'Ada');
+    await userEvent.type(form().getByLabelText(/^Heart rate/), '58');
+    await userEvent.type(form().getByLabelText(/^Body temperature/), '36,6');
+    await userEvent.type(form().getByLabelText(/^Mood/), '4');
+    await start();
+    expect(screen.getByText('Flight day 1 of 180')).toBeInTheDocument();
+    expect(screen.queryByText('Simulated data')).toBeNull();
+    expect(store.state.profile).toEqual({
+      name: 'Ada',
+      simulated: false,
+      mission: 'station',
+      missionDay: 1,
+      baseline: { heartRate: 58, bodyTemp: 36.6, mood: 4 },
+      entries: [],
+      plan: [],
+    });
+    expect(store.state.view).toBe('map');
+  });
+
+  test('can start on another mission', async () => {
+    const { store } = renderSetup();
+    await userEvent.type(form().getByLabelText('Name'), 'Ada');
+    await userEvent.selectOptions(form().getByLabelText('Mission'), 'Mars');
+    await start();
+    expect(screen.getByText('Flight day 1 of 1095')).toBeInTheDocument();
+    expect(store.state.profile.mission).toBe('mars');
+  });
+
+  test('an invalid baseline blocks the save and explains', async () => {
+    const { store } = renderSetup();
+    await userEvent.type(form().getByLabelText('Name'), 'Ada');
+    await userEvent.type(form().getByLabelText(/^Heart rate/), '400');
+    await userEvent.type(form().getByLabelText(/^Sleep/), 'eight');
+    await start();
+    expect(form().getByText('Enter a value between 30 and 220')).toBeInTheDocument();
+    expect(form().getByText('Enter a number')).toBeInTheDocument();
+    expect(form().getByLabelText(/^Heart rate/)).toHaveFocus();
+    expect(store.state.profile.name).toBe('Crew 03');
+    expect(screen.getByText('Simulated data')).toBeInTheDocument();
+  });
+
+  test('a name is required', async () => {
+    const { store } = renderSetup();
+    await userEvent.type(form().getByLabelText('Name'), '   ');
+    await start();
+    expect(form().getByText('Enter a name')).toBeInTheDocument();
+    expect(store.state.profile.name).toBe('Crew 03');
+  });
+
+  test('offers a baseline for every indicator that is compared with one', () => {
+    renderSetup();
+    for (const label of ['Heart rate', 'Blood pressure, systolic', 'Blood pressure, diastolic', 'Blood sugar', 'Body temperature', 'Sleep', 'Mood', 'Water', 'Appetite', 'Strength self-rating', 'Height', 'Reaction time', 'Vision level']) {
+      expect(form().getByLabelText(new RegExp(`^${label}`))).toBeInTheDocument();
+    }
+    expect(form().queryByLabelText(/^Exercise/)).toBeNull();
+    expect(form().queryByLabelText(/^Radiation dose/)).toBeNull();
+  });
+
+  test('replacing a real profile that has entries asks first', async () => {
+    const real = { name: 'Ada', simulated: false, mission: 'station' as const, missionDay: 3, baseline: {}, plan: [], entries: [{ day: 1, values: { heartRate: 60 }, symptoms: [], stepsDone: [] }] };
+    const { store } = renderSetup({ profile: real });
+    await userEvent.type(form().getByLabelText('Name'), 'Grace');
+    await start();
+    expect(form().getByText(/Tick the box to replace/)).toBeInTheDocument();
+    expect(store.state.profile.name).toBe('Ada');
+    await userEvent.click(form().getByRole('checkbox', { name: /Replace Ada/ }));
+    await start();
+    expect(store.state.profile.name).toBe('Grace');
+  });
+
+  test('Reset demo always returns to the demo profile', async () => {
+    const real = { name: 'Ada', simulated: false, mission: 'mars' as const, missionDay: 3, baseline: {}, plan: [], entries: [] };
+    const { store } = renderSetup({ profile: real });
+    await userEvent.click(screen.getByRole('button', { name: 'Reset demo' }));
+    expect(store.state.profile.name).toBe('Crew 03');
+    expect(store.state.profile.simulated).toBe(true);
+    expect(screen.getByText('Simulated data')).toBeInTheDocument();
+  });
+});
