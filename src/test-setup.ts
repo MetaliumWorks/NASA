@@ -4,3 +4,6 @@ import '@testing-library/jest-dom/vitest';
 beforeEach(() => {
   window.localStorage.clear();
 });
+
+// jsdom has no canvas; the star field is decoration and simply does not draw in tests.
+HTMLCanvasElement.prototype.getContext = (() => null) as typeof HTMLCanvasElement.prototype.getContext;
