@@ -62,6 +62,11 @@ export interface Profile {
   simulated: boolean;
   mission: MissionId;
   missionDay: number;
+  /**
+   * The furthest day this profile has reached. A shorter mission shows fewer days, but
+   * choosing a longer one again returns to this day. Absent means `missionDay`.
+   */
+  reachedDay?: number;
   baseline: Partial<Record<IndicatorId, number>>;
   entries: DayEntry[];
   plan: PlanItem[];
