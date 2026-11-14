@@ -39,6 +39,10 @@
   white-space: nowrap;
 }
 
+.mission-button[aria-current='page'] {
+  border-color: var(--bone);
+}
+
 .header-status {
   margin-left: auto;
   display: flex;

@@ -15,7 +15,7 @@ export function assessAll(p: Profile, day: number): Record<RegionId, Assessment>
   return out;
 }
 
-/** Regions that are not nominal, in display order. */
+/** Regions that are not nominal: warnings first, then cautions, each in display order. */
 export function flagged(all: Record<RegionId, Assessment>): Assessment[] {
-  return REGION_ORDER.map((r) => all[r]).filter((a) => a.status !== 'nominal');
+  return (['warning', 'caution'] as const).flatMap((status) => REGION_ORDER.map((r) => all[r]).filter((a) => a.status === status));
 }

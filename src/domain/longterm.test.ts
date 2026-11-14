@@ -1,4 +1,5 @@
-import { assessAll, assessRegion } from './assess';
+import { assessAll, assessRegion, flagged } from './assess';
+import { createDemoProfile } from './demo';
 import { longTermFindings } from './longterm';
 import { heartRateDays, profile, range, symptomOn, weeklySleep } from './test-helpers';
 
@@ -110,6 +111,11 @@ describe('the whole picture', () => {
     const a = assessRegion(symptomOn([...range(30, 40), 47], 'rash'), 'immune', 47);
     expect(a.findings).toContainEqual(expect.objectContaining({ symptom: 'rash', status: 'caution' }));
     expect(a.status).toBe('warning');
+  });
+
+  test('flagged lists warnings before cautions', () => {
+    expect(flagged(assessAll(createDemoProfile(), 47)).map((a) => a.region)).toEqual(['kidneys', 'brain', 'bones']);
+    expect(flagged(assessAll(profile([]), 47))).toEqual([]);
   });
 
   test('assessAll covers the 12 regions', () => {

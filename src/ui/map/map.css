@@ -315,3 +315,7 @@
   font-size: 11px;
   color: var(--muted);
 }
+
+.emphasised .tag {
+  margin: 0;
+}

@@ -1,0 +1,65 @@
+.missions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.mission {
+  position: relative;
+  display: block;
+  padding: 16px 18px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: oklch(0.9 0.02 228 / 0.04);
+  cursor: pointer;
+}
+
+.mission:hover {
+  border-color: var(--muted);
+}
+
+.mission[data-current='true'] {
+  border-color: var(--bone);
+  background: oklch(0.9 0.02 228 / 0.09);
+}
+
+.mission input {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 18px;
+  height: 18px;
+  accent-color: oklch(0.9 0.02 228);
+  cursor: pointer;
+}
+
+.mission-name {
+  display: block;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+
+.mission dl {
+  display: grid;
+  gap: 8px;
+}
+
+.mission dt {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.mission dd {
+  margin: 0;
+  font-size: 14.5px;
+}
+
+.mission-none {
+  color: var(--muted);
+}

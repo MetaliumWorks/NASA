@@ -5,12 +5,15 @@ import { SymptomLog } from './log/SymptomLog';
 import { MapScreen } from './map/MapScreen';
 import { GroundReport } from './report/GroundReport';
 import { Review } from './review/Review';
+import { MissionSetup } from './setup/MissionSetup';
 import { Sources } from './sources/Sources';
 
 export interface Screen {
   view: View;
   /** Label of its button in the header. */
   label: string;
+  /** False for a screen reached another way than the row of tabs. */
+  inNav?: boolean;
   render(): ReactElement;
 }
 
@@ -22,4 +25,5 @@ export const SCREENS: Screen[] = [
   { view: 'log', label: 'Symptom log', render: () => <SymptomLog /> },
   { view: 'report', label: 'Ground report', render: () => <GroundReport /> },
   { view: 'sources', label: 'Sources', render: () => <Sources /> },
+  { view: 'setup', label: 'Mission', inNav: false, render: () => <MissionSetup /> },
 ];

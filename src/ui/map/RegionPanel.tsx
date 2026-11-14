@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { HAZARDS } from '../../content/hazards';
 import { INDICATORS } from '../../content/indicators';
+import { MISSIONS } from '../../content/missions';
 import { REGIONS } from '../../content/regions';
 import { SYMPTOMS } from '../../content/symptoms';
 import { EXERCISE_TARGET_PER_DAY, THRESHOLDS } from '../../content/thresholds';
@@ -200,6 +201,11 @@ export function RegionPanel(p: { region: RegionId; assessment: Assessment }) {
             </p>
           ))}
           <p className="cause">Caused by: {def.hazards.map((h) => HAZARDS[h].name).join(', ')}</p>
+          {def.hazards.some((h) => MISSIONS[profile.mission].hazards.includes(h)) && (
+            <p className="emphasised">
+              <span className="tag">Emphasised on this mission</span>
+            </p>
+          )}
           {def.function && (
             <p>
               <span className="what">What it does:</span> {def.function.text} <SourceLink source={def.function.source} />

@@ -17,6 +17,15 @@ export function Header() {
       <div className="header-top">
         <h1 className="brand">Crew Health</h1>
         {profile.simulated && <span className="tag tag-simulated">Simulated data</span>}
+        <button
+          type="button"
+          className="btn btn-quiet mission-button"
+          aria-label={`Mission: ${MISSIONS[profile.mission].name}`}
+          aria-current={current === 'setup' ? 'page' : undefined}
+          onClick={() => dispatch({ type: 'view', view: 'setup' })}
+        >
+          {MISSIONS[profile.mission].name}
+        </button>
         <div className="header-status mono">
           <span>
             Flight day {profile.missionDay} of {length}
@@ -36,7 +45,7 @@ export function Header() {
         </button>
       </div>
       <nav className="header-nav" aria-label="Screens">
-        {SCREENS.map((s) => (
+        {SCREENS.filter((s) => s.inNav !== false).map((s) => (
           <button
             key={s.view}
             type="button"
