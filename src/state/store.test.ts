@@ -1,4 +1,5 @@
 import { createDemoProfile, emptyProfile } from '../domain/demo';
+import { halfDone } from '../domain/test-helpers';
 import { entryFor } from '../domain/series';
 import { loadState, reducer, saveState, STORAGE_KEY, type AppState } from './store';
 
@@ -119,7 +120,8 @@ describe('check-in', () => {
   });
 
   test('weekly results are merged into today without marking a daily step', () => {
-    const s = reducer(base, { type: 'saveWeekly', values: { reactionMs: 290, visionLevel: 6 } });
+    const half: AppState = { ...base, profile: halfDone(base.profile) };
+    const s = reducer(half, { type: 'saveWeekly', values: { reactionMs: 290, visionLevel: 6 } });
     expect(today(s).values).toMatchObject({ reactionMs: 290, visionLevel: 6 });
     expect(today(s).values.heartRate).toBeDefined();
     expect(today(s).stepsDone).toEqual(['vitals', 'sleepMood', 'symptoms']);
@@ -225,5 +227,112 @@ describe('navigation', () => {
     expect(reducer(base, { type: 'view', view: 'checkin' })).toEqual({ ...base, view: 'checkin' });
     expect(reducer(base, { type: 'select', region: 'heart' })).toEqual({ ...base, selectedRegion: 'heart' });
     expect(reducer(base, { type: 'toggleOrgans' })).toEqual({ ...base, showOrgans: true });
+  });
+});
+
+describe('ground link', () => {
+  const half: AppState = { ...base, profile: halfDone(base.profile) };
+  const subjects = (s: AppState) => (s.profile.outbox ?? []).map((m) => `${m.day} ${m.subject}`);
+  const before = subjects(half);
+
+  test('the half-done day has sent nothing yet', () => {
+    expect(before).toEqual(['7 Weekly review: Inner ear & balance', '35 Missed check-in: flight day 34']);
+  });
+
+  test('completing the daily check-in reports the systems at warning', () => {
+    let s = reducer(half, { type: 'saveStep', step: 'intake', values: { waterLiters: 1.1, appetite: 4, exerciseHours: 1 } });
+    expect(subjects(s)).toEqual(before); // four of five steps: nothing yet
+    s = reducer(s, { type: 'saveStep', step: 'radiation', values: { radiationDose: 0.5 } });
+    expect(subjects(s)).toEqual([...before, '47 Urgent: Kidneys']);
+    expect(s.profile.outbox?.at(-1)).toMatchObject({ id: 'g3', origin: 'checkin', kind: 'urgent' });
+  });
+
+  test('a check-in that ends with cautions only sends nothing', () => {
+    let s = reducer(half, { type: 'saveStep', step: 'intake', values: { waterLiters: 2.4, appetite: 4, exerciseHours: 1 } });
+    s = reducer(s, { type: 'saveStep', step: 'radiation', values: { radiationDose: 0.5 } });
+    expect(subjects(s)).toEqual(before);
+  });
+
+  test('saving a finished step again does not report the same system twice', () => {
+    const again = reducer(base, { type: 'saveStep', step: 'intake', values: { waterLiters: 1.1, appetite: 4, exerciseHours: 1 } });
+    expect(subjects(again)).toEqual(subjects(base));
+  });
+
+  test('a confirmed critical reading is stored on the day and reported at once', () => {
+    const s = reducer(half, {
+      type: 'saveStep',
+      step: 'vitals',
+      values: { heartRate: 140, bpSystolic: 118, bpDiastolic: 76, bloodSugar: 90, bodyTemp: 36.7 },
+      critical: ['heartRate'],
+    });
+    expect(today(s).critical).toEqual(['heartRate']);
+    expect(subjects(s)).toEqual([...before, '47 Critical reading: Heart rate']);
+    // Saving the step again with a normal reading withdraws the confirmation, not the message.
+    const fixed = reducer(s, { type: 'saveStep', step: 'vitals', values: { heartRate: 62, bpSystolic: 118, bpDiastolic: 76, bloodSugar: 90, bodyTemp: 36.7 } });
+    expect(today(fixed).critical).toBeUndefined();
+    expect(subjects(fixed)).toEqual(subjects(s));
+  });
+
+  test('a symptom check adds to the day and reports an urgent finding at once', () => {
+    const s = reducer(half, { type: 'saveCheck', symptoms: ['painAfterSpacewalk'], values: {}, note: ' Left knee ' });
+    expect(today(s).symptoms).toEqual(['painAfterSpacewalk']);
+    expect(today(s).otherDiscomfort).toBe('Left knee');
+    expect(today(s).stepsDone).toEqual(['vitals', 'sleepMood', 'symptoms']); // not a step of the check-in
+    expect(s.profile.checks).toEqual([{ day: 47, symptoms: ['painAfterSpacewalk'], values: {}, note: 'Left knee' }]);
+    expect(subjects(s)).toEqual([...before, '47 Urgent: Lungs & oxygen']);
+    expect(s.profile.outbox?.at(-1)?.origin).toBe('check');
+  });
+
+  test('a symptom check keeps what the day already holds and replaces a reading with the newer one', () => {
+    let s = reducer(base, { type: 'saveCheck', symptoms: ['lightheaded'], values: { bpSystolic: 110, bpDiastolic: 70, heartRate: 66 } });
+    expect(today(s).symptoms).toEqual(['troubleSleeping', 'lightheaded']);
+    expect(today(s).values).toMatchObject({ bpSystolic: 110, bpDiastolic: 70, heartRate: 66 });
+    expect(today(s).values.bodyTemp).toBeDefined();
+    s = reducer(s, { type: 'saveCheck', symptoms: ['lightheaded'], values: {}, note: 'again after lunch' });
+    expect(today(s).symptoms).toEqual(['troubleSleeping', 'lightheaded']);
+    expect(s.profile.checks).toHaveLength(2);
+  });
+
+  test('the weekly check-in reports a result at warning', () => {
+    const s = reducer(base, { type: 'saveWeekly', values: { visionLevel: 3 } });
+    expect(subjects(s).at(-1)).toBe('47 Urgent: Eyes');
+    expect(s.profile.outbox?.at(-1)?.origin).toBe('weekly');
+  });
+
+  test('a day left without its check-in is reported when the next begins', () => {
+    const s = reducer(half, { type: 'advanceDay' });
+    expect(subjects(s)).toEqual([...before, '48 Missed check-in: flight day 47']);
+    expect(reducer(base, { type: 'advanceDay' }).profile.outbox).toEqual(base.profile.outbox); // day 47 was done
+  });
+
+  test('the last day of the mission is not reported as missed by pressing again', () => {
+    const last: AppState = { ...half, profile: { ...half.profile, missionDay: 180 } };
+    expect(reducer(last, { type: 'advanceDay' }).profile.outbox).toEqual(last.profile.outbox);
+  });
+
+  test('a new profile starts with an empty log', () => {
+    const s = reducer(base, { type: 'newProfile', name: 'Ada', mission: 'station', baseline: {} });
+    expect(s.profile.outbox).toBeUndefined();
+    expect(s.profile.checks).toBeUndefined();
+  });
+
+  test('the log and the symptom checks survive a reload; entries of the wrong shape are dropped', () => {
+    const storage = fakeStorage();
+    const s = reducer(base, { type: 'saveCheck', symptoms: ['rash'], values: { bodyTemp: 36.9 } });
+    saveState(storage, s);
+    expect(loadState(storage)).toEqual(s);
+
+    const raw = JSON.parse(storage.map.get(STORAGE_KEY)!);
+    raw.profile.outbox = [raw.profile.outbox[0], { id: 5 }, 'x', null];
+    raw.profile.checks = ['x', { day: 47, symptoms: [], values: {} }];
+    const loaded = loadState(fakeStorage(JSON.stringify(raw)));
+    expect(loaded.profile.outbox).toHaveLength(1);
+    expect(loaded.profile.checks).toEqual([{ day: 47, symptoms: [], values: {} }]);
+
+    raw.profile.outbox = 'nope';
+    delete raw.profile.checks;
+    const cleaned = loadState(fakeStorage(JSON.stringify(raw)));
+    expect(cleaned.profile.outbox).toBeUndefined();
+    expect(cleaned.profile.name).toBe('Crew 03');
   });
 });

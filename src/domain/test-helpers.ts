@@ -57,3 +57,17 @@ export function profileWithWeeklyOn(day: number, today: number): Profile {
   });
   return { ...p, missionDay: today };
 }
+
+/**
+ * The same profile with today's check-in half done: vitals, sleep and mood, and symptoms
+ * saved with nothing reported; the last two steps, their values and today's messages gone.
+ */
+export function halfDone(p: Profile): Profile {
+  const day = p.missionDay;
+  const entries = p.entries.map((e) => {
+    if (e.day !== day) return e;
+    const { waterLiters: _w, appetite: _a, exerciseHours: _e, radiationDose: _r, ...values } = e.values;
+    return { day, values, symptoms: [], stepsDone: ['vitals', 'sleepMood', 'symptoms'] as DayEntry['stepsDone'] };
+  });
+  return { ...p, entries, outbox: (p.outbox ?? []).filter((m) => m.day !== day) };
+}

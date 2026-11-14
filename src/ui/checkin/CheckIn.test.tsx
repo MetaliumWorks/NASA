@@ -6,7 +6,7 @@ import { SYMPTOMS } from '../../content/symptoms';
 import { emptyProfile } from '../../domain/demo';
 import type { CheckInStep } from '../../domain/types';
 import type { AppState } from '../../state/store';
-import { renderApp, todayEntry } from '../test-helpers';
+import { halfDoneState, renderApp, todayEntry } from '../test-helpers';
 import { CheckIn } from './CheckIn';
 
 const STEP_NAME: Record<CheckInStep, RegExp> = {
@@ -18,7 +18,7 @@ const STEP_NAME: Record<CheckInStep, RegExp> = {
 };
 
 async function renderCheckIn(options: { step?: CheckInStep; initial?: Partial<AppState> } = {}) {
-  const result = renderApp(<CheckIn />, { view: 'checkin', ...options.initial });
+  const result = renderApp(<CheckIn />, { ...halfDoneState, view: 'checkin', ...options.initial });
   if (options.step) {
     await userEvent.click(within(screen.getByRole('list', { name: 'Steps' })).getByRole('button', { name: STEP_NAME[options.step] }));
   }

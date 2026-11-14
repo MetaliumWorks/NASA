@@ -22,7 +22,7 @@ const index = () => within(screen.getByRole('navigation', { name: 'Body systems'
 describe('header', () => {
   test('carries the demo context on screen', () => {
     renderMap();
-    for (const t of ['Simulated data', 'Flight day 47 of 180', 'Check-in 3 of 5', 'Streak 12 d']) {
+    for (const t of ['Simulated data', 'Flight day 47 of 180', 'Check-in 5 of 5', 'Streak 13 d']) {
       expect(screen.getByText(t)).toBeInTheDocument();
     }
     expect(screen.getByRole('heading', { level: 1, name: 'Crew Health' })).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe('day summary', () => {
     expect(summary.getByRole('button', { name: /Kidneys.*Warning/ })).toBeInTheDocument();
     expect(summary.getByRole('button', { name: /Bones.*Caution/ })).toBeInTheDocument();
     expect(summary.getByRole('button', { name: /Brain, mind & sleep.*Caution/ })).toBeInTheDocument();
-    expect(summary.getByText(/3 of 5 steps/)).toBeInTheDocument();
+    expect(summary.getByText(/5 of 5 steps/)).toBeInTheDocument();
   });
 
   test('a flagged system opens from the summary', async () => {

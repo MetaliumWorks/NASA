@@ -1,3 +1,4 @@
+import { replayOutbox } from './ground';
 import { seededRandom } from './random';
 import { DAILY_STEPS, type DayEntry, type MissionId, type Profile } from './types';
 
@@ -21,11 +22,12 @@ export const DEMO_BASELINE: Profile['baseline'] = {
   visionLevel: 6,
 };
 
-// The story (spec section 10). Everything else stays close to baseline.
+// The story (spec section 10). Everything else stays close to baseline. Today's check-in is
+// done, so the demo opens on the body map; the last week of the story ends today.
 const SKIPPED_DAY = 34;
-const EXERCISE_BEHIND: Record<number, number> = { 40: 1.5, 41: 1.0, 42: 0.5, 43: 1.5, 44: 1.0, 45: 0, 46: 1.0 };
-const WATER_LOW: Record<number, number> = { 44: 1.4, 45: 1.3, 46: 1.1 };
-const TROUBLE_SLEEPING = [41, 43, 45];
+const EXERCISE_BEHIND: Record<number, number> = { 41: 1.5, 42: 1.0, 43: 0.5, 44: 1.5, 45: 1.0, 46: 0, 47: 1.0 };
+const WATER_LOW: Record<number, number> = { 45: 1.4, 46: 1.3, 47: 1.1 };
+const TROUBLE_SLEEPING = [43, 45, 47];
 const MOTION_SICKNESS = [1, 2, 3, 4];
 
 const round = (x: number, digits: number) => Number(x.toFixed(digits));
@@ -33,7 +35,8 @@ const round = (x: number, digits: number) => Number(x.toFixed(digits));
 /**
  * The simulated crew member: 47 days into a 180-day station mission. Exercise is
  * behind (Bones: caution), water is low (Kidneys: warning) and trouble sleeping was
- * reported on 3 of the last 7 days (Brain, mind & sleep: caution, recurring).
+ * reported on 3 of the last 7 days (Brain, mind & sleep: caution, recurring). The ground
+ * log holds what those 47 days would have sent.
  */
 export function createDemoProfile(): Profile {
   const random = seededRandom(DEMO_SEED);
@@ -75,12 +78,6 @@ export function createDemoProfile(): Profile {
       mood: drawn.mood,
     };
 
-    if (day === DEMO_DAY) {
-      // Today: three of five steps done, nothing reported.
-      entries.push({ day, values: vitalsAndSleep, symptoms: [], stepsDone: ['vitals', 'sleepMood', 'symptoms'] });
-      continue;
-    }
-
     const values: DayEntry['values'] = {
       ...vitalsAndSleep,
       waterLiters: WATER_LOW[day] ?? drawn.waterLiters,
@@ -97,7 +94,7 @@ export function createDemoProfile(): Profile {
     entries.push({ day, values, symptoms, stepsDone: [...DAILY_STEPS] });
   }
 
-  return {
+  const profile: Profile = {
     name: 'Crew 03',
     simulated: true,
     mission: 'station',
@@ -106,6 +103,7 @@ export function createDemoProfile(): Profile {
     entries,
     plan: [],
   };
+  return { ...profile, outbox: replayOutbox(profile) };
 }
 
 /** A real profile on its first day: nothing recorded yet. */

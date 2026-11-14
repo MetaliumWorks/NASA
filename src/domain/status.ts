@@ -2,6 +2,7 @@ import { INDICATORS } from '../content/indicators';
 import { REGIONS } from '../content/regions';
 import { SYMPTOMS } from '../content/symptoms';
 import { EXERCISE_TARGET_PER_DAY, THRESHOLDS } from '../content/thresholds';
+import { criticalReading } from './critical';
 import { formatValue, num } from './format';
 import { entryFor, mean, recent, valuesFor } from './series';
 import type { IndicatorId, Profile, RegionId, Status } from './types';
@@ -18,6 +19,10 @@ export interface Finding {
   value: number | null;
   /** Set on long-term findings. */
   label?: FlagLabel;
+  /** On a flagged indicator: which side of its baseline (or target) it is on. */
+  direction?: 'above' | 'below';
+  /** Today's own reading is far beyond its warning limit. */
+  critical?: boolean;
   /** Short English sentence shown under Findings and in the ground report. */
   reason: string;
 }
@@ -75,6 +80,19 @@ function side(diff: number, amount: string): string {
 }
 
 export function indicatorStatus(p: Profile, id: IndicatorId, day: number): Finding {
+  // One reading far beyond its limit is a warning on its own day, whatever the average says.
+  const today = entryFor(p, day)?.values[id];
+  if (typeof today === 'number') {
+    const critical = criticalReading(p, id, today);
+    if (critical) {
+      return { indicator: id, status: 'warning', due: false, value: today, direction: critical.direction, critical: true, reason: critical.reason };
+    }
+  }
+  return ruleFinding(p, id, day);
+}
+
+/** The indicator against its own rule: an average, a total or the last reading. */
+function ruleFinding(p: Profile, id: IndicatorId, day: number): Finding {
   const rule = THRESHOLDS[id];
   const base = p.baseline[id];
   const hasBase = typeof base === 'number' && Number.isFinite(base) && base !== 0;
@@ -86,11 +104,12 @@ export function indicatorStatus(p: Profile, id: IndicatorId, day: number): Findi
     value,
     reason,
   });
-  const found = (status: Status, value: number, reason: string): Finding => ({
+  const found = (status: Status, value: number, reason: string, direction: 'above' | 'below'): Finding => ({
     indicator: id,
     status,
     due: false,
     value,
+    ...(status !== 'nominal' ? { direction } : {}),
     reason,
   });
   const noEntry = () => due(INDICATORS[id].cadence === 'weekly' ? 'No entry this week' : 'No recent entry');
@@ -114,7 +133,7 @@ export function indicatorStatus(p: Profile, id: IndicatorId, day: number): Findi
       if (!hasBase) return noBaseline(avg);
       const dev = (avg - base) / base;
       const status = atLeast(Math.abs(dev), rule.caution, rule.warning);
-      return found(status, avg, `3-day average ${withUnit(id, avg)}, ${side(dev, pct(dev))}`);
+      return found(status, avg, `3-day average ${withUnit(id, avg)}, ${side(dev, pct(dev))}`, dev > 0 ? 'above' : 'below');
     }
 
     case 'aboveLast': {
@@ -123,7 +142,7 @@ export function indicatorStatus(p: Profile, id: IndicatorId, day: number): Findi
       if (!hasBase) return noBaseline(last);
       const diff = last - base;
       const status = atLeast(diff, rule.caution, rule.warning);
-      return found(status, last, `Last reading ${withUnit(id, last)}, ${side(diff, withUnit(id, Math.abs(diff)))}`);
+      return found(status, last, `Last reading ${withUnit(id, last)}, ${side(diff, withUnit(id, Math.abs(diff)))}`, 'above');
     }
 
     case 'belowAvg3': {
@@ -132,7 +151,7 @@ export function indicatorStatus(p: Profile, id: IndicatorId, day: number): Findi
       if (!hasBase) return noBaseline(avg);
       const diff = avg - base;
       const status = atLeast(-diff, rule.caution, rule.warning);
-      return found(status, avg, `3-day average ${withUnit(id, avg)}, ${side(diff, withUnit(id, Math.abs(diff)))}`);
+      return found(status, avg, `3-day average ${withUnit(id, avg)}, ${side(diff, withUnit(id, Math.abs(diff)))}`, 'below');
     }
 
     case 'scaleAvg3': {
@@ -140,7 +159,7 @@ export function indicatorStatus(p: Profile, id: IndicatorId, day: number): Findi
       if (avg === null) return noEntry();
       // A low score flags: the limit is "at or below".
       const status = atLeast(-avg, -rule.caution, -rule.warning);
-      return found(status, avg, `3-day average ${withUnit(id, avg)}`);
+      return found(status, avg, `3-day average ${withUnit(id, avg)}`, 'below');
     }
 
     case 'fractionAvg3': {
@@ -149,7 +168,7 @@ export function indicatorStatus(p: Profile, id: IndicatorId, day: number): Findi
       if (!hasBase) return noBaseline(avg);
       const fraction = avg / base;
       const status = under(fraction, rule.caution, rule.warning);
-      return found(status, avg, `3-day average ${withUnit(id, avg)}, ${Math.round(fraction * 100)}% of baseline`);
+      return found(status, avg, `3-day average ${withUnit(id, avg)}, ${Math.round(fraction * 100)}% of baseline`, 'below');
     }
 
     case 'sumFraction': {
@@ -163,7 +182,7 @@ export function indicatorStatus(p: Profile, id: IndicatorId, day: number): Findi
         values.length === rule.days
           ? `the last ${rule.days} days`
           : `${values.length} recorded ${values.length === 1 ? 'day' : 'days'}`;
-      return found(status, total, `${num(total)} of ${withUnit(id, target)} over ${span}`);
+      return found(status, total, `${num(total)} of ${withUnit(id, target)} over ${span}`, 'below');
     }
 
     case 'belowLast': {
@@ -172,7 +191,7 @@ export function indicatorStatus(p: Profile, id: IndicatorId, day: number): Findi
       if (!hasBase) return noBaseline(last);
       const diff = last - base;
       const status = atLeast(-diff, rule.caution, rule.warning);
-      return found(status, last, `Last result ${withUnit(id, last)}, ${side(diff, num(Math.abs(diff)))}`);
+      return found(status, last, `Last result ${withUnit(id, last)}, ${side(diff, num(Math.abs(diff)))}`, 'below');
     }
 
     case 'aboveLastPercent': {
@@ -181,7 +200,7 @@ export function indicatorStatus(p: Profile, id: IndicatorId, day: number): Findi
       if (!hasBase) return noBaseline(last);
       const dev = (last - base) / base;
       const status = atLeast(dev, rule.caution, rule.warning);
-      return found(status, last, `Last result ${withUnit(id, last)}, ${side(dev, pct(dev))}`);
+      return found(status, last, `Last result ${withUnit(id, last)}, ${side(dev, pct(dev))}`, 'above');
     }
   }
 }

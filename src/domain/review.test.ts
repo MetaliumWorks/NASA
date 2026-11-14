@@ -81,8 +81,8 @@ test('flaggedDays counts each day once at its worst status', () => {
 test('the demo week shows when each system was flagged', () => {
   const rows = periodReview(createDemoProfile(), 'week', 47);
   const of = (region: string) => rows.find((r) => r.region === region)!.flaggedDays;
-  expect(of('kidneys')).toEqual({ caution: 1, warning: 2 }); // water falls on day 45, then stays low
-  expect(of('bones')).toEqual({ caution: 3, warning: 0 });
+  expect(of('kidneys')).toEqual({ caution: 1, warning: 1 }); // water falls on day 45; caution on 46, warning on 47
+  expect(of('bones')).toEqual({ caution: 2, warning: 0 });
   expect(of('heart')).toEqual({ caution: 0, warning: 0 });
 });
 

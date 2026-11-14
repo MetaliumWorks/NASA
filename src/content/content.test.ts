@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { ALL_INDICATORS, type IndicatorId } from '../domain/types';
+import { CONDITIONS } from './conditions';
 import { HAZARDS } from './hazards';
 import { INDICATORS } from './indicators';
 import { REGION_ORDER, REGIONS } from './regions';
@@ -22,6 +23,7 @@ const allSourced: Sourced[] = [
   ]),
   ...ALL_INDICATORS.map((id) => INDICATORS[id].why),
   ...SYMPTOMS.map((s) => s.basis),
+  ...CONDITIONS.map((c) => c.about),
 ];
 
 test('SOURCES covers every saved page', () => {
@@ -126,4 +128,69 @@ test('recommendation ids are unique within a region and shared objects are reuse
   const inMuscles = REGIONS.muscles.recommendations.find((r) => r.id === 'dailyExercise');
   expect(inBones).toBeDefined();
   expect(inBones).toBe(inMuscles);
+});
+
+describe('possible conditions', () => {
+  const symptomIds = new Set(SYMPTOMS.map((s) => s.id));
+
+  test('ids are unique and each condition belongs to a real region', () => {
+    expect(new Set(CONDITIONS.map((c) => c.id)).size).toBe(CONDITIONS.length);
+    CONDITIONS.forEach((c) => expect(REGIONS[c.region], c.id).toBeDefined());
+  });
+
+  test('every sign is a real symptom or indicator', () => {
+    for (const c of CONDITIONS) {
+      c.symptoms.forEach((s) => expect(symptomIds.has(s), `${c.id}: ${s}`).toBe(true));
+      (c.core ?? []).forEach((s) => expect(c.symptoms, `${c.id}: ${s}`).toContain(s));
+      (c.indicators ?? []).forEach((i) => expect(INDICATORS[i.id], `${c.id}: ${i.id}`).toBeDefined());
+      c.ask.forEach((id) => expect(INDICATORS[id], `${c.id}: ${id}`).toBeDefined());
+      expect(c.symptoms.length + (c.indicators ?? []).length, c.id).toBeGreaterThan(0);
+      expect(c.needs ?? 1, c.id).toBeLessThanOrEqual(Math.max(1, c.symptoms.length));
+    }
+  });
+
+  test('every action is a recommendation of the condition’s own region', () => {
+    for (const c of CONDITIONS) {
+      const ids = REGIONS[c.region].recommendations.map((r) => r.id);
+      c.actions.forEach((a) => expect(ids, `${c.id}: ${a}`).toContain(a));
+    }
+  });
+
+  test('every symptom is a sign of at least one condition', () => {
+    SYMPTOMS.forEach((s) => expect(CONDITIONS.some((c) => c.symptoms.includes(s.id)), s.id).toBe(true));
+  });
+
+  test('every indicator with a limit points to a condition when it is out of range', () => {
+    const covered = new Set(CONDITIONS.flatMap((c) => (c.indicators ?? []).map((i) => i.id)));
+    ALL_INDICATORS.filter((id) => id !== 'radiationDose').forEach((id) => expect(covered.has(id), id).toBe(true));
+  });
+
+  test('the name of each condition is found in its source page', () => {
+    // The name is the source's own wording, give or take capitals and a plural.
+    const words: Record<string, string> = {
+      behavioralChanges: 'behavioral issues',
+      sleepLoss: 'Sleep loss',
+      cognitiveImpairment: 'cognitive or performance impairments',
+      sans: 'neuro-ocular syndrome',
+      spaceMotionSickness: 'motion sickness',
+      lowBloodPressure: 'low blood pressure',
+      arrhythmia: 'heart arrythmias',
+      cardiovascularAdaptation: 'Cardiovascular Adaptations',
+      mildHypoxia: 'Mild hypoxia',
+      decompressionSickness: 'decompression sickness',
+      alteredImmunity: 'Altered Immune System Responses',
+      muscleAndBoneLoss: 'muscle and bone loss',
+      spineElongation: 'elongate',
+      strengthLoss: 'losses to strength',
+      menuFatigue: 'menu fatigue',
+      insulinResistance: 'insulin resistance',
+      dehydration: 'dehydration',
+    };
+    expect(Object.keys(words).sort()).toEqual(CONDITIONS.map((c) => c.id).sort());
+    for (const c of CONDITIONS) expect(file(c.about.source).includes(words[c.id]), `${c.id}: ${words[c.id]}`).toBe(true);
+  });
+
+  test('only decompression sickness is urgent on its own', () => {
+    expect(CONDITIONS.filter((c) => c.urgent).map((c) => c.id)).toEqual(['decompressionSickness']);
+  });
 });

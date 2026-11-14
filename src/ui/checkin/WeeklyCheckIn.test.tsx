@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { createDemoProfile } from '../../domain/demo';
 import { Header } from '../Header';
 import { MapScreen } from '../map/MapScreen';
-import { renderApp, todayEntry } from '../test-helpers';
+import { halfDoneState, renderApp, todayEntry } from '../test-helpers';
 import { CheckIn } from './CheckIn';
 import { ReactionTest } from './ReactionTest';
 import { VisionTest } from './VisionTest';
@@ -244,6 +244,7 @@ describe('weekly check-in', () => {
         <Header />
         <MapScreen />
       </>,
+      halfDoneState,
     );
     const summary = within(screen.getByRole('region', { name: 'Today' }));
     expect(summary.getByText('Nutrition & exercise, Radiation')).toBeInTheDocument();

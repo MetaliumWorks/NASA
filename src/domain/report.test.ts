@@ -29,12 +29,23 @@ test('warnings come before cautions', () => {
   expect(headers).toEqual(['[WARNING] Kidneys', '[CAUTION] Brain, mind & sleep', '[CAUTION] Bones']);
 });
 
-test('a flagged system lists what flags it first, then its other findings', () => {
+test('a flagged system lists what flags it, then its other findings, then what they may point to', () => {
   const start = lines.indexOf('[CAUTION] Brain, mind & sleep');
   const block = lines.slice(start + 1, lines.indexOf('', start));
-  expect(block[0]).toBe('  ! Trouble sleeping: Reported on 3 of the last 7 days (recurring)');
-  expect(block.slice(1).every((l) => l.startsWith('  - '))).toBe(true);
-  expect(block.some((l) => l.startsWith('  - Sleep: 3-day average'))).toBe(true);
+  expect(block.slice(0, 2)).toEqual([
+    '  ! Trouble sleeping: Reported today',
+    '  ! Trouble sleeping: Reported on 3 of the last 7 days (recurring)',
+  ]);
+  const rest = block.slice(2);
+  expect(rest.filter((l) => l.startsWith('  - ')).map((l) => l.split(':')[0])).toEqual(['  - Mood', '  - Sleep', '  - Reaction time']);
+  expect(rest.at(-1)).toBe('  Possible: Sleep loss (NASA: Hazard: Isolation and Confinement)');
+});
+
+test('each flagged system names the condition from the sources that its findings match', () => {
+  expect(text).toContain('  Possible: Dehydration (NASA: Hazard: Gravity Fields)');
+  expect(text).toContain('  Possible: Muscle and bone loss (NASA: Risk of Reduced Cardiorespiratory and Musculoskeletal Fitness)');
+  expect(text).toContain('It is not a diagnosis.');
+  expect(groundReport(emptyProfile('A', 'station', {}), 1)).not.toContain('diagnosis');
 });
 
 test('nominal systems are not itemised', () => {

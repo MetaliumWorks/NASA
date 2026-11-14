@@ -1,6 +1,6 @@
 import { createDemoProfile, emptyProfile } from './demo';
 import { dueToday } from './due';
-import { profileWithWeeklyOn } from './test-helpers';
+import { halfDone, profileWithWeeklyOn } from './test-helpers';
 
 test('weekly items are due when a week has passed without them', () => {
   expect(dueToday(profileWithWeeklyOn(40, 47)).weekly).toEqual(['strength', 'heightCm', 'reactionMs', 'visionLevel']);
@@ -15,7 +15,8 @@ test('only the missing weekly items are due', () => {
 });
 
 test('daily steps not done today are due', () => {
-  expect(dueToday(createDemoProfile()).dailySteps).toEqual(['intake', 'radiation']);
+  expect(dueToday(createDemoProfile()).dailySteps).toEqual([]);
+  expect(dueToday(halfDone(createDemoProfile())).dailySteps).toEqual(['intake', 'radiation']);
   expect(dueToday(emptyProfile('A', 'station', {})).dailySteps).toEqual(['vitals', 'sleepMood', 'symptoms', 'intake', 'radiation']);
 });
 
