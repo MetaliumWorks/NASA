@@ -1,5 +1,6 @@
 import { REGIONS } from '../../content/regions';
 import { flagged } from '../../domain/assess';
+import { reviewDue } from '../../domain/review';
 import type { Assessment } from '../../domain/status';
 import { stepsDoneToday } from '../../domain/streak';
 import { DAILY_STEPS, type RegionId } from '../../domain/types';
@@ -12,6 +13,7 @@ export function DaySummary(p: { all: Record<RegionId, Assessment> }) {
   const { profile } = state;
   const attention = flagged(p.all);
   const steps = stepsDoneToday(profile);
+  const review = reviewDue(profile.missionDay);
 
   let lead = `All ${Object.keys(p.all).length} systems nominal`;
   if (attention.length === 1) lead = '1 system needs attention';
@@ -48,6 +50,23 @@ export function DaySummary(p: { all: Record<RegionId, Assessment> }) {
           )}
         </div>
       </div>
+
+      {review && (
+        <div className="sec">
+          <h3>Review</h3>
+          <div>
+            <p>
+              {review === 'month' ? 'A month' : 'A week'} of entries is complete. The review shows what kept coming back and how your
+              averages moved.
+            </p>
+            <div className="actions">
+              <button type="button" className="btn" onClick={() => dispatch({ type: 'view', view: 'review' })}>
+                {review === 'month' ? 'Monthly review ready' : 'Weekly review ready'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="sec">
         <h3>Check-in</h3>
