@@ -9,7 +9,7 @@
   position: relative;
   display: block;
   padding: 16px 18px 14px;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--control);
   border-radius: 12px;
   background: oklch(0.9 0.02 228 / 0.04);
   cursor: pointer;
@@ -76,7 +76,7 @@
 
 .newprofile select {
   background: oklch(0.9 0.02 228 / 0.06);
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--control);
   border-radius: 8px;
   padding: 8px 12px;
   font: inherit;
@@ -133,4 +133,18 @@
   font-size: 15px;
   padding: 8px 16px;
   border-radius: 8px;
+}
+
+@media (max-width: 960px) {
+  .missions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .baselines {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .newprofile-top {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

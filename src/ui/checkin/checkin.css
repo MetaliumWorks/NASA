@@ -10,7 +10,7 @@
 
 .steps-item {
   background: none;
-  border: 1px solid var(--line);
+  border: 1px solid var(--control);
   border-radius: 999px;
   padding: 5px 12px 5px 8px;
   font-size: 14px;
@@ -80,7 +80,7 @@
   width: 100%;
   max-width: 220px;
   background: oklch(0.9 0.02 228 / 0.06);
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--control);
   border-radius: 8px;
   padding: 8px 12px;
   font-family: var(--font-mono);
@@ -155,7 +155,7 @@
   place-items: center;
   width: 38px;
   height: 38px;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--control);
   border-radius: 50%;
   font-family: var(--font-mono);
   font-size: 14px;
@@ -281,7 +281,7 @@
 .reaction-pad {
   width: 100%;
   height: 132px;
-  border: 1.5px solid var(--line);
+  border: 1.5px solid var(--control);
   border-radius: 10px;
   background: var(--plate);
   color: var(--muted);
@@ -311,4 +311,15 @@
   gap: 8px;
   justify-content: center;
   margin-top: 10px;
+}
+
+@media (max-width: 760px) {
+  .fields,
+  .weekly-tests {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .symptom-groups {
+    columns: 1;
+  }
 }

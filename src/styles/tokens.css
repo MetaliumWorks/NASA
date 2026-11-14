@@ -7,6 +7,8 @@
   --text: oklch(0.95 0.008 230);
   --muted: oklch(0.77 0.022 232);
   --line: oklch(0.37 0.025 236);
+  /* Edge of a control (input, choice, quiet button): 3:1 or more against --bg and --plate. --line is for dividers only. */
+  --control: oklch(0.54 0.025 236);
   --caution: oklch(0.87 0.16 93);
   --warning: oklch(0.73 0.19 30);
 

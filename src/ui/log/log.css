@@ -73,3 +73,23 @@
   display: grid;
   gap: 3px;
 }
+
+@media (max-width: 760px) {
+  .log-scale {
+    display: none;
+  }
+
+  .log-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 12px;
+  }
+
+  .log-row .strip {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .pager {
+    margin-left: 0;
+  }
+}

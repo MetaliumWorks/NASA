@@ -74,3 +74,15 @@
 .sources .actions .hint {
   margin: 0;
 }
+
+@media (max-width: 760px) {
+  .source-groups {
+    columns: 1;
+  }
+
+  /* A table wider than the screen scrolls inside itself. */
+  .limits {
+    display: block;
+    overflow-x: auto;
+  }
+}
