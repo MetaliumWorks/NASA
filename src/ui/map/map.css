@@ -309,3 +309,9 @@
 .due dd {
   margin: 0;
 }
+
+.plan-count {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--muted);
+}

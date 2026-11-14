@@ -9,6 +9,7 @@ import { DAILY_STEPS, type RegionId } from '../../domain/types';
 import { useApp } from '../../state/store';
 import { STEP_TITLE } from '../checkin/CheckIn';
 import { StatusGlyph } from '../StatusGlyph';
+import { TodayPlan } from './TodayPlan';
 
 /** The right-hand panel when no region is selected: what needs attention today. */
 export function DaySummary(p: { all: Record<RegionId, Assessment> }) {
@@ -103,6 +104,8 @@ export function DaySummary(p: { all: Record<RegionId, Assessment> }) {
           </div>
         </div>
       </div>
+
+      <TodayPlan />
     </section>
   );
 }

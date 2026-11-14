@@ -60,6 +60,15 @@ const dailyExercise: Recommendation = {
   },
 };
 
+/** A recommendation by its id, whichever region lists it. */
+export function findRecommendation(id: string): Recommendation | undefined {
+  for (const region of REGION_ORDER) {
+    const found = REGIONS[region].recommendations.find((r) => r.id === id);
+    if (found) return found;
+  }
+  return undefined;
+}
+
 export const REGIONS: Record<RegionId, RegionDef> = {
   brain: {
     id: 'brain',
