@@ -353,3 +353,8 @@
     gap: 0;
   }
 }
+
+.limits-note {
+  margin: 2px 0 0;
+  font-size: 13px;
+}

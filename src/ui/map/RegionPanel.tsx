@@ -189,6 +189,14 @@ export function RegionPanel(p: { region: RegionId; assessment: Assessment }) {
           {def.indicators.length === 0 && symptoms.length > 0 && (
             <p className="finding-note">This system has no measured indicator. Its status comes from the symptoms you report.</p>
           )}
+          {!isRadiation && (
+            <p className="finding-note limits-note">
+              <span>The limits behind a status are the team’s own settings, not NASA values.</span>
+              <button type="button" className="linklike" onClick={() => dispatch({ type: 'view', view: 'sources' })}>
+                See all limits
+              </button>
+            </p>
+          )}
         </div>
       </div>
 

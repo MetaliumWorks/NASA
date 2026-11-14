@@ -154,6 +154,19 @@ describe('region panel', () => {
     expect(radiation.getByText('Recorded only. The sources give no limit.')).toBeInTheDocument();
   });
 
+  test('says at the point of use that the limits are the team’s own, and leads to them', async () => {
+    const { store } = renderMap({ selectedRegion: 'kidneys' });
+    const kidneys = panel('Kidneys');
+    expect(kidneys.getByText('The limits behind a status are the team’s own settings, not NASA values.')).toBeInTheDocument();
+    await userEvent.click(kidneys.getByRole('button', { name: 'See all limits' }));
+    expect(store.state.view).toBe('sources');
+  });
+
+  test('radiation, which has no limit, does not mention limits', () => {
+    renderMap({ selectedRegion: 'radiation' });
+    expect(panel('Radiation').queryByText(/team’s own settings/)).toBeNull();
+  });
+
   test('Back to today returns to the summary', async () => {
     renderMap({ selectedRegion: 'kidneys' });
     await userEvent.click(screen.getByRole('button', { name: 'Back to today' }));

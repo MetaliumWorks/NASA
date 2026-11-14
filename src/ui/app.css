@@ -141,6 +141,18 @@
   color: var(--bone);
 }
 
+/* A button that reads as a link inside running text. */
+.linklike {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--bone);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
 /* Tick boxes, as in the approved mockup. */
 .check {
   display: grid;
