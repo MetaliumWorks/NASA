@@ -6,7 +6,7 @@
  ". Measure again, or confirm the reading. A confirmed reading is reported to the ground.": ". Bu değer başlangıçtan çok uzak. Yeniden ölçün ya da ölçümü onaylayın. Onaylanan değer yere bildirilir.",
  ". Radiation has no limit in the sources, so the dose is recorded and totalled only.": ". Kaynaklarda radyasyon için bir sınır yok; bu yüzden doz yalnızca kaydedilir ve toplanır.",
  ". The dashed line is the": ". Kesikli çizgi:",
- ": this reading is correct": "— bu ölçüm doğru",
+ ": this reading is correct": " — bu ölçüm doğru",
  "; shown here for information.": "; burada bilgi amaçlı gösteriliyor.",
  "A critical reading is a single reading": "Kritik değer, başlangıç değerinden uyarı sınırının",
  "A discomfort that is not in the list. It is kept in your log and the ground report and does not change any status.": "Listede olmayan bir rahatsızlık. Günlüğünüzde ve yer raporunda tutulur, hiçbir durumu değiştirmez.",
