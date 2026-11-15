@@ -6,7 +6,7 @@ A health monitor for astronauts on long missions, built for the NASA Space Apps 
 On a long mission the astronaut has to notice changes in their own health. Crew Health does three things:
 
 1. **Collects.** A short daily check-in and a weekly one record the health indicators.
-2. **Assesses.** A scan-style body map shows at a glance which of 13 body systems asks for attention. The problem is
+2. **Assesses.** A scan-style body map shows at a glance which of 12 body systems asks for attention. The problem is
    lit where it is: the organ or the bones take the status colour.
 3. **Guides.** Each system says what space does to it, what to do about it today and what to pass on to the ground
    team, with the NASA or CSA page each statement comes from.
@@ -42,7 +42,7 @@ npm run build
 
 | Screen | What it does |
 |---|---|
-| Body map | The figure, 13 systems and the radiation ring. The selected system reads like a short report: Findings with charts, Impression, Recommendation. With nothing selected it shows today: what is flagged, what is due, today's plan. |
+| Body map | The figure, 12 systems and the radiation ring. The selected system reads like a short report: Findings with charts, Impression, Recommendation. With nothing selected it shows today: what is flagged, what is due, today's plan. |
 | Check-in | Daily and mandatory, in five steps: vitals, sleep and mood, symptoms, nutrition and exercise, radiation. Until it is done the other screens are locked. It ends by saying what it found. Weekly: a reaction test, a vision test, height and a strength self-rating. |
 | Symptom check | Any time. Say what you notice; the app asks about the other signs of the conditions it may be and for the measurements that help tell, then says what it finds. |
 | Review | The last week or month, system by system: days each symptom was reported, days spent flagged, averages against the period before and the baseline. |
@@ -81,8 +81,6 @@ restores the starting state.
 - **Ground link.** The app reports a confirmed critical reading, every system at warning when a check ends, the
   weekly or monthly review when it finds something that keeps coming back, and a day left without its check-in.
   The link is simulated: messages are written to a log in the app and nothing leaves the device.
-- **Mouth.** The source pages say nothing about teeth or gums, so the Mouth system holds only what they do say:
-  cold sores from reawakened viruses, and saliva samples.
 
 ## Where the health content comes from
 
@@ -146,7 +144,7 @@ Design and plan: `docs/superpowers/specs/2026-11-14-astronaut-health-monitor-des
 ## Türkçe özet
 
 Crew Health, uzun görevlerdeki astronotlar için sunucusuz bir sağlık izleme uygulamasıdır. Astronot kısa bir günlük
-ve haftalık kayıtla göstergelerini girer; tarama görünümlü vücut haritası 13 sistemden hangisinin ilgi istediğini
+ve haftalık kayıtla göstergelerini girer; tarama görünümlü vücut haritası 12 sistemden hangisinin ilgi istediğini
 gösterir; her sistem için NASA/CSA kaynaklı açıklama ve öneriler sunulur. Arayüz İngilizcedir.
 
 - Günlük kayıt **zorunludur**; bitene kadar diğer ekranlar kilitlidir. Temel değerden çok uzak bir okuma için

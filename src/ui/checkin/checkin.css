@@ -356,3 +356,10 @@
 .check-earlier {
   margin-top: 22px;
 }
+
+/* A tick box inside a field keeps its own layout, not that of the field's label. */
+.field label.check {
+  display: grid;
+  font-weight: 400;
+  margin-bottom: 0;
+}

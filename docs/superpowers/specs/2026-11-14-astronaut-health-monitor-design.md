@@ -321,7 +321,6 @@ Ekibin 2026-11-15 isteği: uygulama "doktor gibi" çalışsın. Aşağıdaki dö
 - 47. günün kaydı tamamdır. Hikâyenin son haftası bugün biter: egzersiz 41–47. günler, su 45–47. günler, uyku sorunu 43, 45 ve 47. günler. Seri 13 gündür.
 - Ground link kutusu, 47 günün kurallara göre üreteceği mesajlarla dolu gelir: 7. gün haftalık değerlendirme (uzay tutması), 35. gün "34. günün kaydı yapılmadı", 47. gün "Urgent: Kidneys".
 
-### 15.5 Ağız (13. sistem)
+### 15.5 Ağız sağlığı: iptal (Karar, ekip)
 
-Ekip ağız sağlığını da istedi. **Kaynak sayfalarında diş ve diş eti hakkında hiçbir cümle yok.** Ağızla ilgili olan iki şey var: uyanan virüslerin yol açtığı uçuk ve bunları gösteren tükürük örneği. "Mouth" sistemi yalnızca bunlarla kuruldu (Karar, Claude); uçuk belirtisi Blood & immunity'den buraya taşındı. Diş ağrısı ve diş eti kanaması gibi belirtiler **eklenmedi**: eklemek kaynak kuralına ekibin açık bir istisna yazmasını ya da kurala uyan bir NASA/CSA sayfası bulunmasını gerektirir. Bu karar ekipte açık duruyor.
-
+Ekip ağız sağlığını da istedi, sonra iptal etti. Kaynak sayfalarında diş ve diş eti hakkında hiçbir cümle yok; ağızla ilgili yalnızca uçuk ve tükürük örneği geçiyor. Uygulama 12 sistemle kalır; uçuk belirtisi Blood & immunity altındadır.
