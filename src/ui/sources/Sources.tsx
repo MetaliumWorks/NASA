@@ -222,7 +222,10 @@ export function Sources() {
               </tr>
               <tr>
                 <th scope="row">Trending</th>
-                <td>The weekly average moves further from baseline three weeks running, by at least half the caution limit</td>
+                <td>
+                  The weekly median (for a 1 to 5 scale, the weekly average) moves further from baseline three weeks running, by at least
+                  half the caution limit
+                </td>
                 <td>Caution</td>
               </tr>
             </tbody>
