@@ -1,4 +1,4 @@
-import { entryFor, mean, recent, valuesFor } from './series';
+import { entryFor, mean, median, recent, valuesFor } from './series';
 import { profile } from './test-helpers';
 
 const p = profile([
@@ -44,4 +44,17 @@ test('mean averages the values', () => {
 test('entryFor finds the entry of a day', () => {
   expect(entryFor(p, 46)?.values.heartRate).toBe(72);
   expect(entryFor(p, 41)).toBeUndefined();
+});
+
+test('median is the middle value and ignores one extreme reading', () => {
+  expect(median([62, 62, 125, 62, 62, 62, 62])).toBe(62);
+  expect(median([3, 1, 2])).toBe(2);
+});
+
+test('median of an even count is the mean of the two middle values', () => {
+  expect(median([1, 2, 3, 10])).toBe(2.5);
+});
+
+test('median of nothing is null', () => {
+  expect(median([])).toBeNull();
 });

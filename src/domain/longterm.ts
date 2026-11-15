@@ -1,7 +1,7 @@
 import { REGIONS } from '../content/regions';
 import { SYMPTOMS } from '../content/symptoms';
 import { LONG_TERM, THRESHOLDS } from '../content/thresholds';
-import { mean, valuesFor } from './series';
+import { median, valuesFor } from './series';
 import { EPS, indicatorStatus, withUnit, type Finding } from './status';
 import type { IndicatorId, Profile, RegionId } from './types';
 
@@ -59,9 +59,10 @@ function sustained(p: Profile, id: IndicatorId, day: number): Finding | null {
 }
 
 /**
- * Slow drift: the weekly average has moved further from baseline three weeks running,
- * and by at least half the caution limit in total. It fires inside the daily limit; its
- * job is the slide that no single day shows.
+ * Slow drift: the week's typical value has moved further from baseline three weeks
+ * running, and by at least half the caution limit in total. It fires inside the daily
+ * limit; its job is the slide that no single day shows. The typical value is the median,
+ * so one extreme reading (a critical one, say) is not read as four weeks of drift.
  */
 function trending(p: Profile, id: IndicatorId, day: number): Finding | null {
   const rule = THRESHOLDS[id];
@@ -70,12 +71,12 @@ function trending(p: Profile, id: IndicatorId, day: number): Finding | null {
   const hasBase = typeof base === 'number' && Number.isFinite(base) && base !== 0;
   if (rule.kind !== 'scaleAvg3' && !hasBase) return null;
 
-  // Weekly means, newest first: week k covers [day - 7k - 6, day - 7k].
+  // Weekly medians, newest first: week k covers [day - 7k - 6, day - 7k].
   const means: number[] = [];
   for (let k = 0; k < LONG_TERM.trendWeeks; k++) {
     const values = valuesFor(p, id, day - 7 * k - 6, day - 7 * k).map((v) => v.value);
     if (values.length < LONG_TERM.trendMinPerWeekValues) return null;
-    means.push(mean(values) as number);
+    means.push(median(values) as number);
   }
 
   // Distance from baseline in the direction that is bad for this indicator.
@@ -109,7 +110,7 @@ function trending(p: Profile, id: IndicatorId, day: number): Finding | null {
     due: false,
     value: means[0],
     label: 'trending',
-    reason: `Weekly average has moved from ${withUnit(id, then)} to ${withUnit(id, means[0])} over four weeks`,
+    reason: `Weekly median has moved from ${withUnit(id, then)} to ${withUnit(id, means[0])} over four weeks`,
   };
 }
 

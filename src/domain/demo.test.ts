@@ -14,6 +14,18 @@ test('demo is deterministic', () => {
   expect(createDemoProfile()).toEqual(demo);
 });
 
+test('the demo is built once and handed out as independent copies', () => {
+  createDemoProfile();
+  const started = performance.now();
+  const copies = Array.from({ length: 10 }, () => createDemoProfile());
+  // Each call used to replay 47 days of ground rules, about 170 ms; ten of them in one test ran into the test timeout.
+  expect(performance.now() - started).toBeLessThan(300);
+  copies[0].entries[0].symptoms.push('changed');
+  copies[0].baseline.heartRate = 1;
+  copies[0].outbox!.length = 0;
+  expect(createDemoProfile()).toEqual(copies[1]);
+});
+
 test('demo is a simulated station crew on flight day 47', () => {
   expect(demo).toMatchObject({ name: 'Crew 03', simulated: true, mission: 'station', missionDay: 47, plan: [] });
 });

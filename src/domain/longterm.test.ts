@@ -67,6 +67,15 @@ describe('slow drift', () => {
     expect(f).toContainEqual(expect.objectContaining({ indicator: 'sleepHours', status: 'caution', label: 'trending' }));
   });
 
+  test('one extreme reading in the newest week is not a slow drift', () => {
+    // Three flat weeks that differ by a tenth of a beat, then a single reading of 125 on the last day.
+    const rows = [62.1, 62.2, 62.3, 62.4].flatMap((value, week) =>
+      range(20 + week * 7, 26 + week * 7).map((day) => ({ day, heartRate: day === 47 ? 125 : value })),
+    );
+    const found = longTermFindings(profile(rows, { heartRate: 62 }), 'heart', 47);
+    expect(found.filter((f) => f.label === 'trending')).toEqual([]);
+  });
+
   test('a drift below the floor is not trending', () => {
     expect(longTermFindings(weeklySleep([7.5, 7.4, 7.3, 7.2]), 'brain', 47)).toEqual([]);
   });

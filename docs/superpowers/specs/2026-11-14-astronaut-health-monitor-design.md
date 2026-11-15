@@ -219,7 +219,7 @@ Bir bölgenin durumu, göstergelerinin en ağır olanıdır. Karşılaştırma h
 | Yavaş kayma | haftalık ortalama üç hafta üst üste temel değerden uzaklaşıyor | Caution | trending |
 
 - "Yavaş kayma" günlük sınırın içinde kalınsa bile tetiklenir; amacı tek tek günlerde görünmeyen gidişi yakalamaktır.
-- **Yavaş kaymanın ayrıntısı (Karar, Claude):** son dört haftanın ortalamalarına bakılır; her hafta bir öncekinden daha uzakta olmalı ve dört haftadaki toplam kayma o göstergenin caution sınırının en az yarısı kadar olmalıdır. İkinci koşul rastgele dalgalanmanın uyarı üretmesini önler. Bir haftanın ortalaması için o haftada en az dört kayıt gerekir.
+- **Yavaş kaymanın ayrıntısı (Karar, Claude):** son dört haftanın ortancalarına bakılır (ortalama değil: tek bir aşırı okuma, örneğin onaylanmış bir kritik okuma, dört haftalık kayma gibi görünmesin diye); her hafta bir öncekinden daha uzakta olmalı ve dört haftadaki toplam kayma o göstergenin caution sınırının en az yarısı kadar olmalıdır. İkinci koşul rastgele dalgalanmanın uyarı üretmesini önler. Bir haftanın ortalaması için o haftada en az dört kayıt gerekir.
 - **Egzersiz hedefi** kaynaktan: günde 1,5 saat, haftada 7 gün için 10,5 saat.
 - **Beklenen kemik kaybı** kaynaktaki orandan hesaplanır: görev günü / 30 × (%1 ile %1,5). Bir aralık olarak gösterilir; ölçüm değildir ve ekranda "expected" diye geçer.
 - **Radyasyon** için kaynaklarda sınır olmadığından yalnızca kayıt ve toplam gösterilir.

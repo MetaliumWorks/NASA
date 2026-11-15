@@ -39,6 +39,15 @@ const round = (x: number, digits: number) => Number(x.toFixed(digits));
  * log holds what those 47 days would have sent.
  */
 export function createDemoProfile(): Profile {
+  // Always the same profile, and working out its ground log replays 47 days of rules, so it
+  // is built once. Every caller gets its own copy; the profile is plain data.
+  built ??= JSON.stringify(buildDemoProfile());
+  return JSON.parse(built) as Profile;
+}
+
+let built: string | undefined;
+
+function buildDemoProfile(): Profile {
   const random = seededRandom(DEMO_SEED);
   const around = (centre: number, spread: number) => centre + (random() * 2 - 1) * spread;
   const scale = (centre: number) => {
