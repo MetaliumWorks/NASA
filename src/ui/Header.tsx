@@ -1,7 +1,9 @@
 import { MISSIONS } from '../content/missions';
 import { stepsDoneToday, streak } from '../domain/streak';
 import { DAILY_STEPS } from '../domain/types';
+import { getLang, setLang } from '../i18n/translate';
 import { useApp } from '../state/store';
+import { Presentation } from './present/Presentation';
 import './app.css';
 import { checkInRequired, OPEN_WHILE_LOCKED, shownView } from './gate';
 import { SCREENS } from './screens';
@@ -29,6 +31,19 @@ export function Header() {
         >
           {MISSIONS[profile.mission].name}
         </button>
+        <div className="lang-switch" role="group" aria-label="Language" data-no-translate>
+          {(['tr', 'en'] as const).map((l) => (
+            <button
+              key={l}
+              type="button"
+              className="lang-option"
+              aria-pressed={getLang() === l}
+              onClick={() => getLang() !== l && setLang(l)}
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
+        </div>
         <div className="header-status mono">
           <span>
             Flight day {profile.missionDay} of {length}
@@ -38,6 +53,7 @@ export function Header() {
           </span>
           <span>Streak {streak(profile)} d</span>
         </div>
+        <Presentation />
         <button
           type="button"
           className="btn btn-quiet"
