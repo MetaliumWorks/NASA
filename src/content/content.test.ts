@@ -56,8 +56,8 @@ test('quotes are real sentences, not fragments', () => {
   allSourced.forEach((s) => expect(norm(s.quote).length, s.quote).toBeGreaterThanOrEqual(20));
 });
 
-test('all 12 regions exist with an impression and a ground-report item', () => {
-  expect(REGION_ORDER).toHaveLength(12);
+test('all 13 regions exist with an impression and a ground-report item', () => {
+  expect(REGION_ORDER).toHaveLength(13);
   REGION_ORDER.forEach((id) => {
     expect(REGIONS[id].id).toBe(id);
     expect(REGIONS[id].impression.length).toBeGreaterThanOrEqual(1);
@@ -193,4 +193,10 @@ describe('possible conditions', () => {
   test('only decompression sickness is urgent on its own', () => {
     expect(CONDITIONS.filter((c) => c.urgent).map((c) => c.id)).toEqual(['decompressionSickness']);
   });
+});
+
+test('the mouth is built from what the sources say and nothing about teeth is claimed', () => {
+  expect(SYMPTOMS.filter((s) => s.region === 'mouth').map((s) => s.id)).toEqual(['coldSores']);
+  const text = JSON.stringify(REGIONS.mouth).toLowerCase();
+  for (const word of ['tooth', 'teeth', 'gum', 'dental']) expect(text.includes(word), word).toBe(false);
 });

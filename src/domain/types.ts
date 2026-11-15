@@ -4,6 +4,7 @@ export type RegionId =
   | 'brain'
   | 'eyes'
   | 'innerEar'
+  | 'mouth'
   | 'heart'
   | 'lungs'
   | 'immune'

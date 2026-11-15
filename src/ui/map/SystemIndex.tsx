@@ -3,7 +3,7 @@ import type { RegionId, Status } from '../../domain/types';
 import { useApp } from '../../state/store';
 import { StatusGlyph } from '../StatusGlyph';
 
-/** All 12 systems with their status. The way to any region by keyboard. */
+/** Every system with its status. The way to any region by keyboard. */
 export function SystemIndex(p: { statuses: Record<RegionId, Status> }) {
   const { state, dispatch } = useApp();
   return (

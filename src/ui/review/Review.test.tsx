@@ -18,7 +18,7 @@ test('the week view shows symptom days, flagged days and long-term labels', () =
   expect(row('Kidneys').getByText('1 day at warning, 1 at caution')).toBeInTheDocument();
   expect(row('Bones').getByText('2 days at caution')).toBeInTheDocument();
   expect(row('Heart & vessels').getByText('No flagged days')).toBeInTheDocument();
-  expect(screen.getAllByRole('row')).toHaveLength(13); // 12 systems and the header row
+  expect(screen.getAllByRole('row')).toHaveLength(14); // 13 systems and the header row
 });
 
 test('each indicator is compared with the period before and the baseline', () => {

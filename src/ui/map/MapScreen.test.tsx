@@ -61,7 +61,7 @@ describe('day summary', () => {
 
   test('a quiet day says all systems are nominal', () => {
     renderMap({ profile: emptyProfile('New crew', 'station', {}) });
-    expect(screen.getByText('All 12 systems nominal')).toBeInTheDocument();
+    expect(screen.getByText('All 13 systems nominal')).toBeInTheDocument();
   });
 });
 
@@ -175,9 +175,9 @@ describe('region panel', () => {
 });
 
 describe('system index and figure', () => {
-  test('the system index lists all 12 and selects on click', async () => {
+  test('the system index lists all 13 and selects on click', async () => {
     renderMap();
-    expect(index().getAllByRole('button')).toHaveLength(12);
+    expect(index().getAllByRole('button')).toHaveLength(13);
     expect(index().getByRole('button', { name: 'Kidneys Warning' })).toBeInTheDocument();
     expect(index().getByRole('button', { name: 'Eyes Nominal' })).toBeInTheDocument();
     await userEvent.click(index().getByRole('button', { name: /Kidneys/ }));
@@ -188,7 +188,7 @@ describe('system index and figure', () => {
   test('the figure shows the three flagged systems of the demo', () => {
     renderMap();
     expect(screen.getByRole('img', { name: /^Body scan\./ })).toHaveAccessibleName(
-      'Body scan. Kidneys: warning. Brain, mind & sleep: caution. Bones: caution. 9 systems nominal.',
+      'Body scan. Kidneys: warning. Brain, mind & sleep: caution. Bones: caution. 10 systems nominal.',
     );
     expect(screen.getByText('3 flagged')).toBeInTheDocument();
   });

@@ -162,7 +162,7 @@ export const SYMPTOMS: SymptomDef[] = [
   {
     id: 'coldSores',
     label: 'Cold sores',
-    region: 'immune',
+    region: 'mouth',
     basis: {
       text: 'Space stressors may awaken dormant viruses in astronauts’ bodies, like those that cause cold sores and shingles.',
       source: 'risk-immune',

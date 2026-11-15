@@ -30,6 +30,7 @@ export const REGION_ORDER: RegionId[] = [
   'brain',
   'eyes',
   'innerEar',
+  'mouth',
   'heart',
   'lungs',
   'immune',
@@ -218,6 +219,44 @@ export const REGIONS: Record<RegionId, RegionDef> = {
         },
       },
       groundReport('innerEar'),
+    ],
+  },
+
+  // The source pages say nothing about teeth or gums. What they do say about the mouth is here:
+  // cold sores from reawakened viruses, and saliva as the sample that shows them.
+  mouth: {
+    id: 'mouth',
+    name: 'Mouth',
+    hazards: ['environment', 'radiation'],
+    indicators: [],
+    impression: [
+      {
+        text: 'Space stressors may awaken dormant viruses in astronauts’ bodies, like those that cause cold sores and shingles.',
+        source: 'risk-immune',
+        quote: 'awaken dormant viruses in astronauts’ bodies, like those that cause cold sores and shingles',
+      },
+      {
+        text: 'Viruses, if reactivated, can be found in saliva and urine samples.',
+        source: 'past-altered-immunity',
+        quote: 'Viruses, if reactivated, can be found in saliva and urine samples.',
+      },
+      {
+        text: 'NASA’s Standard Measures study uses saliva to measure the function of the immune system.',
+        source: 'study-standard-measures',
+        quote: 'saliva to measure the function of the immune system',
+      },
+    ],
+    recommendations: [
+      {
+        id: 'salivaSample',
+        text: 'Provide your saliva sample.',
+        basis: {
+          text: 'In the Immune Biomarkers study, saliva is collected during the mission as well as before and after it.',
+          source: 'study-immune-biomarkers',
+          quote: 'saliva will be collected during the mission as well',
+        },
+      },
+      groundReport('mouth'),
     ],
   },
 

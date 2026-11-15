@@ -26,6 +26,7 @@ test('the review has one row per region, in display order', () => {
     'brain',
     'eyes',
     'innerEar',
+    'mouth',
     'heart',
     'lungs',
     'immune',
