@@ -140,7 +140,7 @@ figure only, never as a source of health information.
 ## Use of Super Intelligence (SI)
 
 This project was built with SI assistance: Claude (Anthropic) wrote most of the code and tests, drafted the texts,
-the slides and the app icon (`build/icon.svg`), and helped gather the source pages. The team chose the idea and the
+made the 30-second demo video and drew the app icon (`build/icon.svg`), and helped gather the source pages. The team chose the idea and the
 features, tested the app and asked for every change. The app itself uses no SI or machine learning: its findings come
 from fixed rules, and every health statement is a quote from the NASA and CSA pages, checked by a test. The figure
 artwork is public-domain drawings by people (see Artwork), not SI-generated.
@@ -200,7 +200,7 @@ gösterir; her sistem için NASA/CSA kaynaklı açıklama ve öneriler sunulur. 
   birebir geçen alıntısı testle denetlenir.
 - **Bütün eşikler ekibin kendi ayarıdır, NASA değeri değildir** (`src/content/thresholds.ts`).
 - Çizimler Wikimedia Commons'taki kamu malı çizimlerdir (Mariana Ruiz Villarreal, Mikael Häggström).
-- Proje yapay zekâ (SI) yardımıyla yapıldı: kodun ve testlerin çoğunu, metinleri, slaytları ve uygulama simgesini
+- Proje yapay zekâ (SI) yardımıyla yapıldı: kodun ve testlerin çoğunu, metinleri, 30 saniyelik tanıtım videosunu ve uygulama simgesini
   Claude (Anthropic) hazırladı. Uygulamanın kendisi yapay zekâ kullanmaz.
 - Çalıştırmak için: `npm install`, ardından `npm run dev`. Test: `npm test`. Derleme: `npm run build`.
 - Lisans: Apache 2.0 (`LICENSE`). Çizimler kamu malı, fontlar SIL OFL 1.1, React ve Electron MIT.
