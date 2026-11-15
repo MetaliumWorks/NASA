@@ -6,10 +6,14 @@ A health monitor for astronauts on long missions, built for the NASA Space Apps 
 On a long mission the astronaut has to notice changes in their own health. Crew Health does three things:
 
 1. **Collects.** A short daily check-in and a weekly one record the health indicators.
-2. **Assesses.** A scan-style body map shows at a glance which of 12 body systems asks for attention. The problem is
+2. **Assesses.** A scan-style body map shows at a glance which of 13 body systems asks for attention. The problem is
    lit where it is: the organ or the bones take the status colour.
 3. **Guides.** Each system says what space does to it, what to do about it today and what to pass on to the ground
    team, with the NASA or CSA page each statement comes from.
+
+It works the way a careful clinician would. The daily check-in is mandatory. A reading far from baseline has to be
+measured again or confirmed. When findings match a condition the source pages describe, the app names it as
+"Possible", and what is urgent is reported to the ground on its own.
 
 It runs in the browser with no server, no account and no network connection.
 
@@ -38,11 +42,12 @@ npm run build
 
 | Screen | What it does |
 |---|---|
-| Body map | The figure, 12 systems and the radiation ring. The selected system reads like a short report: Findings with charts, Impression, Recommendation. With nothing selected it shows today: what is flagged, what is due, today's plan. |
-| Check-in | Daily, in five steps: vitals, sleep and mood, symptoms, nutrition and exercise, radiation. Weekly: a reaction test, a vision test, height and a strength self-rating. |
+| Body map | The figure, 13 systems and the radiation ring. The selected system reads like a short report: Findings with charts, Impression, Recommendation. With nothing selected it shows today: what is flagged, what is due, today's plan. |
+| Check-in | Daily and mandatory, in five steps: vitals, sleep and mood, symptoms, nutrition and exercise, radiation. Until it is done the other screens are locked. It ends by saying what it found. Weekly: a reaction test, a vision test, height and a strength self-rating. |
+| Symptom check | Any time. Say what you notice; the app asks about the other signs of the conditions it may be and for the measurements that help tell, then says what it finds. |
 | Review | The last week or month, system by system: days each symptom was reported, days spent flagged, averages against the period before and the baseline. |
 | Symptom log | Every symptom day by day, 30 days at a time, and the free-text discomforts. |
-| Ground report | A plain-text summary of the flagged systems to copy or download. Nothing is sent. |
+| Ground link | The log of what the app reported to the ground, and the full report to copy or download. The link is simulated: nothing leaves the device. |
 | Mission | Station, Moon or Mars, and starting a real profile with its own baseline. |
 | Sources | Every source page, the artwork credit, all limits, and what is simulated. |
 
@@ -56,9 +61,28 @@ generated from a fixed seed, so it is the same on every load: exercise is behind
 low (Kidneys: warning) and trouble sleeping was reported on 3 of the last 7 days (Brain, mind & sleep: caution).
 A "Simulated data" tag is on every screen while this profile is open.
 
+Today's check-in is already done in the demo, so it opens on the body map, and its ground log holds what those 47
+days would have reported. **Advance one day** starts a new day, which locks the app on the mandatory check-in;
+"Fill with simulated readings" (simulated profile only) fills a step so a demo does not have to type every number.
+
 The mission day does not follow the clock. **Advance one day** moves it on, so the demo looks the same whenever it
 is shown. What you enter is added to the demo and saved in the browser; **Reset demo** (Sources or Mission screen)
 restores the starting state.
+
+## Possible conditions, critical readings and the ground link
+
+- **Possible conditions.** `src/content/conditions.ts` holds the conditions the source pages describe (mild hypoxia,
+  decompression sickness, space motion sickness, an altered immune response, low blood pressure and others), each
+  with its signs and a passage from its page. Findings that match are shown as "Possible: ...". It is a match with
+  the sources, not a diagnosis, and the app names nothing the pages do not describe.
+- **Critical readings.** A single reading twice as far from baseline as its warning limit is critical. The check-in
+  asks to measure again or confirm; a confirmed reading is reported at once. The factor is one number in
+  `src/content/thresholds.ts` and, like every limit, the team's own setting.
+- **Ground link.** The app reports a confirmed critical reading, every system at warning when a check ends, the
+  weekly or monthly review when it finds something that keeps coming back, and a day left without its check-in.
+  The link is simulated: messages are written to a log in the app and nothing leaves the device.
+- **Mouth.** The source pages say nothing about teeth or gums, so the Mouth system holds only what they do say:
+  cold sores from reawakened viruses, and saliva samples.
 
 ## Where the health content comes from
 
@@ -69,7 +93,8 @@ to directly. The text of those 51 pages is saved in `docs/sources/`.
   word in the saved page. `src/content/content.test.ts` fails if a statement has no source or its passage is not in
   the page.
 - The app links each statement to its page.
-- The app does not diagnose. It shows which system asks for attention and passes on what the source recommends.
+- The app does not diagnose. It shows which system asks for attention, names the conditions from the sources that
+  the findings match, and passes on what the source recommends.
 
 ## The limits are the team's own
 
@@ -121,8 +146,13 @@ Design and plan: `docs/superpowers/specs/2026-11-14-astronaut-health-monitor-des
 ## Türkçe özet
 
 Crew Health, uzun görevlerdeki astronotlar için sunucusuz bir sağlık izleme uygulamasıdır. Astronot kısa bir günlük
-ve haftalık kayıtla göstergelerini girer; tarama görünümlü vücut haritası 12 sistemden hangisinin ilgi istediğini
+ve haftalık kayıtla göstergelerini girer; tarama görünümlü vücut haritası 13 sistemden hangisinin ilgi istediğini
 gösterir; her sistem için NASA/CSA kaynaklı açıklama ve öneriler sunulur. Arayüz İngilizcedir.
+
+- Günlük kayıt **zorunludur**; bitene kadar diğer ekranlar kilitlidir. Temel değerden çok uzak bir okuma için
+  uygulama "yeniden ölç ya da onayla" der.
+- Bulgular kaynaklarda tarif edilen bir durumla eşleşirse "Possible: …" diye söylenir; **teşhis değildir**.
+- Acil olan üsse kendiliğinden bildirilir. Bu bağlantı **simülasyondur**: mesajlar uygulamadaki kutuya yazılır.
 
 - Açılıştaki "Crew 03" profili **simülasyondur**; her ekranda "Simulated data" etiketi görünür.
 - Sağlık içeriği yalnızca `docs/sources/` içindeki 51 NASA/CSA sayfasından gelir; her metnin kaynağı ve sayfada
