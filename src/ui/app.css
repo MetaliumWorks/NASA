@@ -520,3 +520,25 @@
   font-weight: 600;
   color: var(--bone);
 }
+
+/* Language: two small segments, TR and EN. */
+.lang-switch {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.lang-option {
+  font: 500 13px var(--font-mono);
+  padding: 6px 10px;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.lang-option[aria-pressed='true'] {
+  background: var(--bone);
+  color: var(--plate);
+}
