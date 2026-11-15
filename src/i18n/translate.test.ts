@@ -30,6 +30,17 @@ describe('translateText', () => {
   });
 });
 
+describe('text the app builds from parts', () => {
+  test('a confirmed critical reading', () => {
+    expect(translateText('Critical reading: Heart rate')).toBe('Kritik değer: Nabız');
+    expect(translateText('Today 140 bpm · Critical reading 140 bpm, 125.8% above baseline')).toBe(
+      'Bugün 140 atım/dk · Kritik değer 140 atım/dk, başlangıcın 125.8% üstünde',
+    );
+    expect(translateText('Reported to the ground today')).toBe('Bugün yere bildirilenler');
+    expect(translateText('critical')).toBe('kritik');
+  });
+});
+
 describe('translateTree', () => {
   test('text and labels, but not what was typed', () => {
     document.body.innerHTML =

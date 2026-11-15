@@ -28,13 +28,43 @@ export function setLang(lang: Lang) {
   location.reload();
 }
 
+const tx = (s: string) => translateText(s) ?? s;
+const side = (w: string) => (w === 'above' ? 'üstünde' : 'altında');
+
+/** Text the app builds from parts: each rule translates the parts it captures. */
+const RULES: [RegExp, (m: RegExpMatchArray) => string][] = [
+  [/^Critical reading: (.+)$/, (m) => `Kritik değer: ${tx(m[1])}`],
+  [
+    /^Today (.+?) · Critical reading (.+?), (.+?) (above|below) baseline$/,
+    (m) => `Bugün ${tx(m[1])} · Kritik değer ${tx(m[2])}, başlangıcın ${m[3]} ${side(m[4])}`,
+  ],
+  [/^Critical reading (.+?), (.+?) (above|below) baseline$/, (m) => `Kritik değer ${tx(m[1])}, başlangıcın ${m[2]} ${side(m[3])}`],
+  [/^Today (.+?) · (.+)$/, (m) => `Bugün ${tx(m[1])} · ${tx(m[2])}`],
+  [/^(.+?) (above|below) baseline$/, (m) => `başlangıcın ${m[1]} ${side(m[2])}`],
+  [/^(.+?): (.+)$/, (m) => `${tx(m[1])}: ${tx(m[2])}`],
+];
+
+function fromRules(core: string): string | null {
+  for (const [rx, make] of RULES) {
+    const m = core.match(rx);
+    if (!m) continue;
+    const out = make(m);
+    if (out !== core) return out;
+  }
+  return null;
+}
+
 /** The Turkish for one piece of screen text, or null when there is none. */
 export function translateText(text: string): string | null {
   const core = text.trim();
   if (!core) return null;
   const nums = core.match(NUM) ?? [];
   const value = DICT[core] ?? DICT[core.replace(NUM, '{n}')];
-  if (value == null) return null;
+  if (value == null) {
+    const ruled = fromRules(core);
+    if (ruled == null) return null;
+    return text.slice(0, text.indexOf(core)) + ruled + text.slice(text.indexOf(core) + core.length);
+  }
   let next = 0;
   const filled = value.replace(/\{(n|\d)\}/g, (_, k: string) => (k === 'n' ? nums[next++] : nums[Number(k)]) ?? '');
   const lead = text.slice(0, text.indexOf(core));

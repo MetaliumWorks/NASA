@@ -13,6 +13,8 @@ export interface Part {
   view: View;
   region?: RegionId | null;
   name: string;
+  /** Stay on the last frame until the next press. */
+  hold?: boolean;
 }
 
 export const PARTS: Part[] = [
@@ -24,7 +26,9 @@ export const PARTS: Part[] = [
   { start: 34.5, end: 39.5, view: 'map', region: 'kidneys', name: 'Öneriler' },
   { start: 39.5, end: 44, view: 'report', name: 'Yer bağlantısı' },
   { start: 44, end: 48.5, view: 'setup', name: 'Görev' },
-  { start: 48.5, end: 55, view: 'sources', name: 'Kaynaklar ve kapanış' },
+  { start: 48.5, end: 51.1, view: 'sources', name: 'Kaynaklar' },
+  // the closing card stays on screen until the next press, then the app comes back
+  { start: 51.1, end: 58, view: 'map', region: null, name: 'Kapanış', hold: true },
 ];
 
 const VIDEO = './tanitim.mp4';
@@ -37,6 +41,7 @@ export function Presentation() {
   const [on, setOn] = useState(false);
   const [next, setNext] = useState(0);
   const [playing, setPlaying] = useState<number | null>(null);
+  const [held, setHeld] = useState<number | null>(null);
 
   const finish = useCallback(
     (i: number) => {
@@ -65,8 +70,14 @@ export function Presentation() {
     let raf = 0;
     const tick = () => {
       const v = video.current;
-      if (v && v.currentTime >= PARTS[playing].end - 0.04) finish(playing);
-      else raf = requestAnimationFrame(tick);
+      const part = PARTS[playing];
+      if (v && (v.currentTime >= part.end - 0.04 || v.ended)) {
+        if (part.hold) {
+          v.pause();
+          setHeld(playing);
+          setPlaying(null);
+        } else finish(playing);
+      } else raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
@@ -76,6 +87,7 @@ export function Presentation() {
     video.current?.pause();
     setOn(false);
     setPlaying(null);
+    setHeld(null);
     setNext(0);
   }, []);
 
@@ -86,12 +98,22 @@ export function Presentation() {
       const forward = e.key === 'ArrowRight' || e.key === 'PageDown' || (e.key === ' ' && !typing());
       if (!forward) return;
       e.preventDefault();
-      if (playing != null) finish(playing);
-      else play(next);
+      if (playing != null) {
+        if (PARTS[playing].hold) {
+          const v = video.current;
+          if (v) v.currentTime = PARTS[playing].end - 0.05;
+          v?.pause();
+          setHeld(playing);
+          setPlaying(null);
+        } else finish(playing);
+      } else if (held != null) {
+        setHeld(null);
+        finish(held);
+      } else play(next);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [on, playing, next, play, finish, stop]);
+  }, [on, playing, held, next, play, finish, stop]);
 
   return (
     <>
@@ -107,10 +129,10 @@ export function Presentation() {
         Tanıtım modu
       </button>
       <div className={'present' + (on ? ' is-on' : '')} data-no-translate>
-        <div className={'present-video' + (playing != null ? ' is-playing' : '')} aria-hidden={playing == null}>
+        <div className={'present-video' + (playing != null || held != null ? ' is-playing' : '')} aria-hidden={playing == null && held == null}>
           <video ref={video} src={VIDEO} preload="auto" playsInline muted />
         </div>
-        {on && playing == null && (
+        {on && playing == null && held == null && (
           <div className="present-bar" role="region" aria-label="Tanıtım modu">
             <span className="mono">
               Tanıtım · {Math.min(next, PARTS.length)}/{PARTS.length}
