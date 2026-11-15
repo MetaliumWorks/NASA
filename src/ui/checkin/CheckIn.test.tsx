@@ -242,9 +242,9 @@ test('a check-in that ends with a system at warning says so and reports it', asy
   expect(result.getByText('2 systems need attention')).toBeInTheDocument();
   expect(result.getByText('Urgent: Kidneys')).toBeInTheDocument();
   expect(result.getByText(/Simulated link/)).toBeInTheDocument();
-  expect(result.getByText('Possible: Dehydration.')).toBeInTheDocument();
+  expect(result.getByText('Risk: Dehydration.')).toBeInTheDocument();
   expect(result.getByText('What to do: Drink more water today.')).toBeInTheDocument();
-  expect(result.getByText(/It is not a diagnosis/)).toBeInTheDocument();
+  expect(result.getByText(/Neither is a diagnosis/)).toBeInTheDocument();
   expect(store.state.profile.outbox?.at(-1)?.subject).toBe('Urgent: Kidneys');
   await userEvent.click(result.getByRole('button', { name: 'Open Kidneys' }));
   expect(store.state).toMatchObject({ view: 'map', selectedRegion: 'kidneys' });

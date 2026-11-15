@@ -232,9 +232,9 @@ describe('doctor-like additions', () => {
   test('a flagged system names the condition its findings match, with its source and what points to it', () => {
     renderMap({ selectedRegion: 'kidneys' });
     const kidneys = panel('Kidneys');
-    expect(kidneys.getByText('Possible: Dehydration.')).toBeInTheDocument();
+    expect(kidneys.getByText('Risk: Dehydration.')).toBeInTheDocument();
     expect(kidneys.getByText('Points to it: Water: 3-day average 1.3 L, 53% of baseline.')).toBeInTheDocument();
-    expect(kidneys.getByText(/It is not a diagnosis/)).toBeInTheDocument();
+    expect(kidneys.getByText(/Neither is a diagnosis/)).toBeInTheDocument();
   });
 
   test('a nominal system names no condition', () => {

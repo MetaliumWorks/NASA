@@ -42,9 +42,9 @@ test('a flagged system lists what flags it, then its other findings, then what t
 });
 
 test('each flagged system names the condition from the sources that its findings match', () => {
-  expect(text).toContain('  Possible: Dehydration (NASA: Hazard: Gravity Fields)');
-  expect(text).toContain('  Possible: Muscle and bone loss (NASA: Risk of Reduced Cardiorespiratory and Musculoskeletal Fitness)');
-  expect(text).toContain('It is not a diagnosis.');
+  expect(text).toContain('  Risk: Dehydration (NASA: Hazard: Gravity Fields)');
+  expect(text).toContain('  Risk: Muscle and bone loss (NASA: Risk of Reduced Cardiorespiratory and Musculoskeletal Fitness)');
+  expect(text).toContain('Neither is a diagnosis.');
   expect(groundReport(emptyProfile('A', 'station', {}), 1)).not.toContain('diagnosis');
 });
 

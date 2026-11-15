@@ -1,3 +1,4 @@
+import { conditionLead } from '../content/conditions';
 import { INDICATORS } from '../content/indicators';
 import { MISSIONS } from '../content/missions';
 import { REGION_ORDER, REGIONS } from '../content/regions';
@@ -10,7 +11,8 @@ import type { Assessment, Finding } from './status';
 import type { Profile, RegionId } from './types';
 
 /** Said wherever a possible condition is named. */
-export const NOT_A_DIAGNOSIS = '"Possible" names a condition the source pages describe that these findings match. It is not a diagnosis.';
+export const NOT_A_DIAGNOSIS =
+  '"Possible" names a condition the source pages describe that these findings match. "Risk" names one the pages link to a habit that is off; no sign of it was measured. Neither is a diagnosis.';
 
 export function findingName(f: Finding): string {
   if (f.symptom) return SYMPTOMS.find((s) => s.id === f.symptom)?.label ?? f.symptom;
@@ -39,7 +41,7 @@ export function regionBlock(region: RegionId, assessment: Assessment, matches: C
   for (const f of findings.filter((f) => f.status === 'nominal')) lines.push(`  - ${line(f)}`);
   for (const m of matchesFor(matches, region)) {
     const source = SOURCES[m.condition.about.source];
-    lines.push(`  Possible: ${m.condition.name} (${source.org}: ${source.title})`);
+    lines.push(`  ${conditionLead(m.condition)}: ${m.condition.name} (${source.org}: ${source.title})`);
   }
   return lines;
 }

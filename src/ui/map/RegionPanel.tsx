@@ -1,3 +1,4 @@
+import { conditionLead } from '../../content/conditions';
 import { useState } from 'react';
 import { HAZARDS } from '../../content/hazards';
 import { INDICATORS } from '../../content/indicators';
@@ -209,7 +210,10 @@ export function RegionPanel(p: { region: RegionId; assessment: Assessment; match
           {possible.map((m) => (
             <div key={m.condition.id} className="possible" data-status={m.status}>
               <p>
-                <span className="what">Possible: {m.condition.name}.</span> {m.condition.about.text}{' '}
+                <span className="what">
+                  {conditionLead(m.condition)}: {m.condition.name}.
+                </span>{' '}
+                {m.condition.about.text}{' '}
                 <SourceLink source={m.condition.about.source} />
               </p>
               <p className="possible-signs">Points to it: {m.signs.join('; ')}.</p>

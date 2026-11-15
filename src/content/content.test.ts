@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { ALL_INDICATORS, type IndicatorId } from '../domain/types';
-import { CONDITIONS } from './conditions';
+import { CONDITIONS, conditionLead } from './conditions';
 import { HAZARDS } from './hazards';
 import { INDICATORS } from './indicators';
 import { REGION_ORDER, REGIONS } from './regions';
@@ -193,4 +193,15 @@ describe('possible conditions', () => {
   test('only decompression sickness is urgent on its own', () => {
     expect(CONDITIONS.filter((c) => c.urgent).map((c) => c.id)).toEqual(['decompressionSickness']);
   });
+});
+
+test('a condition matched only by a habit is worded as a risk, and only those are', () => {
+  const habits: IndicatorId[] = ['exerciseHours', 'waterLiters'];
+  for (const c of CONDITIONS) {
+    const ids = (c.indicators ?? []).map((i) => i.id);
+    const habitOnly = c.symptoms.length === 0 && ids.length > 0 && ids.every((id) => habits.includes(id));
+    expect(c.basis === 'risk', c.id).toBe(habitOnly);
+    expect(conditionLead(c), c.id).toBe(habitOnly ? 'Risk' : 'Possible');
+  }
+  expect(CONDITIONS.filter((c) => c.basis === 'risk').map((c) => c.id).sort()).toEqual(['dehydration', 'muscleAndBoneLoss']);
 });

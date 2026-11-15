@@ -19,9 +19,9 @@ describe('after the daily check-in', () => {
       '',
       '[WARNING] Kidneys',
       '  ! Water: 3-day average 1.2 L, 50% of baseline',
-      '  Possible: Dehydration (NASA: Hazard: Gravity Fields)',
+      '  Risk: Dehydration (NASA: Hazard: Gravity Fields)',
       '',
-      '"Possible" names a condition the source pages describe that these findings match. It is not a diagnosis.',
+      '"Possible" names a condition the source pages describe that these findings match. "Risk" names one the pages link to a habit that is off; no sign of it was measured. Neither is a diagnosis.',
     ]);
   });
 
