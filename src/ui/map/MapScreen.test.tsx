@@ -71,7 +71,7 @@ describe('region panel', () => {
     const bones = panel('Bones');
     expect(bones.getByRole('heading', { name: 'Bones' })).toBeInTheDocument();
     expect(bones.getByRole('heading', { name: 'Bones' }).parentElement).toHaveTextContent('Caution');
-    expect(bones.getByText('6.5 of 10.5 h over the last 7 days')).toBeInTheDocument();
+    expect(bones.getByText(/^Today [0-9.]+ h · 6.5 of 10.5 h over the last 7 days$/)).toBeInTheDocument();
     expect(bones.getByText('62% of target')).toBeInTheDocument();
     expect(bones.getByRole('img', { name: 'Exercise, 6.5 h over 7 days, target 1.5 h per day' })).toBeInTheDocument();
     expect(bones.getByText('Expected density loss by day 47').closest('div')).toHaveTextContent('1.6–2.4%');

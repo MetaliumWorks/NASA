@@ -236,3 +236,22 @@ export function expectedBoneLoss(day: number): { min: number; max: number } {
   const months = day / 30;
   return { min: months * 1, max: months * 1.5 };
 }
+
+/** Rules that read an average or a running total, not a single reading. */
+const SPREAD = new Set(['percentAvg3', 'belowAvg3', 'scaleAvg3', 'fractionAvg3', 'sumFraction']);
+
+/**
+ * Today's own value, for a finding that is read from several days. The status comes from
+ * the average or the total; this shows the day behind it. Null when there is nothing to add.
+ */
+export function todayNote(p: Profile, f: Finding, day: number): string | null {
+  if (!f.indicator || !SPREAD.has(THRESHOLDS[f.indicator].kind)) return null;
+  const value = entryFor(p, day)?.values[f.indicator];
+  return typeof value === 'number' ? `Today ${withUnit(f.indicator, value)}` : null;
+}
+
+/** A finding's reason with today's value in front, when it has one. */
+export function withToday(p: Profile, f: Finding, day: number): string {
+  const today = todayNote(p, f, day);
+  return today ? `${today} · ${f.reason}` : f.reason;
+}

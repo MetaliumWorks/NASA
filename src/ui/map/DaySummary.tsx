@@ -4,7 +4,7 @@ import { flagged } from '../../domain/assess';
 import { dueToday } from '../../domain/due';
 import { sentOn } from '../../domain/ground';
 import { reviewDue } from '../../domain/review';
-import type { Assessment } from '../../domain/status';
+import { withToday, type Assessment } from '../../domain/status';
 import { stepsDoneToday } from '../../domain/streak';
 import { DAILY_STEPS, type RegionId } from '../../domain/types';
 import { useApp } from '../../state/store';
@@ -48,7 +48,7 @@ export function DaySummary(p: { all: Record<RegionId, Assessment> }) {
                   <li key={a.region}>
                     <button type="button" className="flag-item" onClick={() => dispatch({ type: 'select', region: a.region })}>
                       <span className="flag-name">{REGIONS[a.region].name}</span> <StatusGlyph status={a.status} label />{' '}
-                      {why && <span className="flag-why">{why.reason}</span>}
+                      {why && <span className="flag-why">{withToday(profile, why, profile.missionDay)}</span>}
                     </button>
                   </li>
                 );
