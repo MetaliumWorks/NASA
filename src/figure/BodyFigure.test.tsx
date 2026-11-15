@@ -177,3 +177,28 @@ test('a redrawn bone carries its own status, because a copy does not take the co
   expect(overlay.querySelector('use[href="#FemurLeft"]')).toHaveClass('hot-caution');
   expect(overlay.querySelector('use[href="#LumbarVertebrae"]')).toHaveClass('hot-warning');
 });
+
+test('a selected system shows its organ even when nothing is wrong, and hides it again when let go', () => {
+  const view = render(<BodyFigure statuses={nominal} selected="lungs" showOrgans={false} onSelect={noop} />);
+  expect(view.container.querySelectorAll('image[data-region="lungs"]').length).toBeGreaterThan(0);
+  expect(view.container.querySelectorAll('image[data-region="heart"]')).toHaveLength(0);
+  view.rerender(<BodyFigure statuses={nominal} selected={null} showOrgans={false} onSelect={noop} />);
+  expect(view.container.querySelectorAll('image[data-region]')).toHaveLength(0);
+});
+
+test('a selected system drawn as markers shows them', () => {
+  const { container } = render(<BodyFigure statuses={nominal} selected="eyes" showOrgans={false} onSelect={noop} />);
+  expect(container.querySelectorAll('circle[data-region="eyes"]').length).toBeGreaterThan(0);
+});
+
+test('a selected nominal Spine outlines its bones without a status colour', () => {
+  const { container } = render(<BodyFigure statuses={nominal} selected="spine" showOrgans={false} onSelect={noop} />);
+  const overlay = container.querySelector('[data-testid="hot-bones"]')!;
+  expect(overlay.querySelector('use[href="#LumbarVertebrae"]')).toHaveClass('hot-selected');
+  expect(overlay.querySelector('use[href="#FemurLeft"]')).toBeNull();
+});
+
+test('a flagged bone keeps its status colour when its system is selected', () => {
+  const { container } = render(<BodyFigure statuses={flagged} selected="bones" showOrgans={false} onSelect={noop} />);
+  expect(container.querySelector('[data-testid="hot-bones"] use[href="#FemurLeft"]')).toHaveClass('hot-caution');
+});
