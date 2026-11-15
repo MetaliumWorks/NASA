@@ -168,6 +168,22 @@ src/ui        the screens
 Design and plan: `docs/superpowers/specs/2026-11-14-astronaut-health-monitor-design.md` and
 `docs/superpowers/plans/2026-11-14-astronaut-health-monitor.md`. Approved mockup: `docs/mockups/lightbox-v4.html`.
 
+## License
+
+Copyright 2026 İkiAdam (Anıl Akyüz, İsmail Metehan Şahin). The team's own code and text are licensed under the
+[Apache License 2.0](LICENSE). Third-party material keeps its own terms:
+
+| Material | License |
+|---|---|
+| Skeleton and organ drawings (Mariana Ruiz Villarreal, Mikael Häggström, Wikimedia Commons) | Public domain |
+| Instrument Sans and Martian Mono fonts (via Fontsource) | SIL Open Font License 1.1 |
+| React, React DOM | MIT |
+| Electron (Windows program only) | MIT |
+| Development tools (Vite, TypeScript, Vitest, Testing Library, jsdom, electron-builder, @xmldom/xmldom) | MIT or Apache 2.0; not shipped in the app |
+| Passages quoted from NASA and CSA pages | Their publishers' terms; each is shown with its source link |
+
+See also [NOTICE](NOTICE).
+
 ## Türkçe özet
 
 Crew Health, uzun görevlerdeki astronotlar için sunucusuz bir sağlık izleme uygulamasıdır. Astronot kısa bir günlük
@@ -187,3 +203,4 @@ gösterir; her sistem için NASA/CSA kaynaklı açıklama ve öneriler sunulur. 
 - Proje yapay zekâ (SI) yardımıyla yapıldı: kodun ve testlerin çoğunu, metinleri, slaytları ve uygulama simgesini
   Claude (Anthropic) hazırladı. Uygulamanın kendisi yapay zekâ kullanmaz.
 - Çalıştırmak için: `npm install`, ardından `npm run dev`. Test: `npm test`. Derleme: `npm run build`.
+- Lisans: Apache 2.0 (`LICENSE`). Çizimler kamu malı, fontlar SIL OFL 1.1, React ve Electron MIT.
