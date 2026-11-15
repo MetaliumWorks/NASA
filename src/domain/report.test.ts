@@ -21,7 +21,7 @@ test('report names the flagged systems with their reasons', () => {
   expect(text).toContain('Reported on 3 of the last 7 days');
   expect(text).toContain('3-day average 1.3 L, 53% of baseline');
   expect(text).toContain('6.5 of 10.5 h over the last 7 days');
-  expect(lines.at(-1)).toBe('10 systems nominal.');
+  expect(lines.at(-1)).toBe('9 systems nominal.');
 });
 
 test('warnings come before cautions', () => {
@@ -67,14 +67,14 @@ test('Moon has no comms line', () => {
 
 test('nothing flagged still produces a report', () => {
   const quiet = groundReport(emptyProfile('A', 'station', {}), 1);
-  expect(quiet).toContain('13 systems nominal.');
+  expect(quiet).toContain('12 systems nominal.');
   expect(quiet).toContain('No system is flagged.');
   expect(quiet).not.toMatch(/NaN|undefined|Infinity/);
 });
 
 test('one nominal system is singular', () => {
   // Eleven systems cannot be flagged at once with the content we have, so check the wording directly.
-  expect(groundReport(emptyProfile('A', 'station', {}), 1).split('\n').at(-1)).toBe('13 systems nominal.');
+  expect(groundReport(emptyProfile('A', 'station', {}), 1).split('\n').at(-1)).toBe('12 systems nominal.');
 });
 
 test("today's free-text discomfort is included, yesterday's is not", () => {

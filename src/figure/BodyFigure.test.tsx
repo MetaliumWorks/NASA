@@ -13,7 +13,7 @@ const noop = () => {};
 
 test('flagged regions are named with their status', () => {
   render(<BodyFigure statuses={flagged} selected={null} showOrgans={false} onSelect={noop} />);
-  expect(screen.getByRole('img')).toHaveAccessibleName('Body scan. Kidneys: warning. Bones: caution. 11 systems nominal.');
+  expect(screen.getByRole('img')).toHaveAccessibleName('Body scan. Kidneys: warning. Bones: caution. 10 systems nominal.');
   expect(screen.getByText('Kidneys')).toBeInTheDocument();
   expect(screen.getByText('warning')).toBeInTheDocument();
   expect(screen.getByText('Bones')).toBeInTheDocument();
@@ -22,9 +22,9 @@ test('flagged regions are named with their status', () => {
 
 test('with nothing flagged the figure says so and labels nothing', () => {
   render(<BodyFigure statuses={nominal} selected={null} showOrgans={false} onSelect={noop} />);
-  expect(screen.getByRole('img')).toHaveAccessibleName('Body scan. 13 systems nominal.');
+  expect(screen.getByRole('img')).toHaveAccessibleName('Body scan. 12 systems nominal.');
   expect(screen.queryByText('nominal')).toBeNull();
-  expect(figureLabel({ ...nominal, eyes: 'caution' })).toBe('Body scan. Eyes: caution. 12 systems nominal.');
+  expect(figureLabel({ ...nominal, eyes: 'caution' })).toBe('Body scan. Eyes: caution. 11 systems nominal.');
 });
 
 test('organs stay hidden when nothing is wrong', () => {

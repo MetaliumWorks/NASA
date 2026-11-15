@@ -118,9 +118,9 @@ describe('the whole picture', () => {
     expect(flagged(assessAll(profile([]), 47))).toEqual([]);
   });
 
-  test('assessAll covers the 13 regions', () => {
+  test('assessAll covers the 12 regions', () => {
     const all = assessAll(profile([]), 47);
-    expect(Object.keys(all)).toHaveLength(13);
+    expect(Object.keys(all)).toHaveLength(12);
     Object.values(all).forEach((a) => expect(a.status).toBe('nominal'));
   });
 });

@@ -64,7 +64,6 @@ export const MARKERS: Partial<Record<RegionId, { cx: number; cy: number; r: numb
     { cx: 173, cy: 84, r: 4 },
     { cx: 233, cy: 84, r: 4 },
   ],
-  mouth: [{ cx: 203, cy: 99, r: 6 }],
 };
 
 export interface Callout {
@@ -77,7 +76,6 @@ export interface Callout {
 export const CALLOUTS: Partial<Record<RegionId, Callout>> = {
   brain: { from: [203, 48], to: [262, 44], side: 'right' },
   innerEar: { from: [233, 84], to: [262, 100], side: 'right' },
-  mouth: { from: [209, 99], to: [318, 157], side: 'right' },
   heart: { from: [215, 225], to: [350, 215], side: 'right' },
   kidneys: { from: [252, 289], to: [350, 289], side: 'right' },
   digestion: { from: [240, 340], to: [350, 350], side: 'right' },
