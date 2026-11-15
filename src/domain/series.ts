@@ -26,6 +26,14 @@ export function recent(p: Profile, id: IndicatorId, day: number, n: number): num
     .map((v) => v.value);
 }
 
+/** The middle value; one extreme reading does not move it. */
+export function median(xs: number[]): number | null {
+  if (xs.length === 0) return null;
+  const sorted = [...xs].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
 export function mean(xs: number[]): number | null {
   if (xs.length === 0) return null;
   return xs.reduce((a, b) => a + b, 0) / xs.length;
