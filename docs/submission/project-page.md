@@ -27,7 +27,7 @@ a daily routine and a picture anyone can read at a glance.
 
 ## Link to Project Demo
 
-`[link to the 7-slide deck, public, no login]`
+`[Google Drive link to the 30-second video, shared with "Anyone with the link"]`
 
 ## Link to Final Project
 
@@ -173,7 +173,7 @@ Software and fonts (open source):
 - React, Vite, TypeScript, Vitest, Testing Library, jsdom, Electron, electron-builder, @xmldom/xmldom.
 - Instrument Sans and Martian Mono (SIL Open Font License), via Fontsource.
 
-No NASA logos, flags or other branding are used in the app or the slides.
+No NASA logos, flags or other branding are used in the app or the video.
 
 ---
 
@@ -185,7 +185,7 @@ Yes. We used Claude (Anthropic) as an assistant throughout the hackathon. After 
 proposed three possible directions; we chose the clickable body map, which the challenge text itself suggests. We
 decided the features and the look: a web app, the scan-style figure, the starfield, organs shown only when needed,
 day-by-day symptom records with weekly and monthly checks, a required daily check-in, doctor-like follow-up questions,
-critical readings and the ground link. Claude wrote most of the code and tests, drafted these texts and the slides,
+critical readings and the ground link. Claude wrote most of the code and tests, drafted these texts and made the 30-second motion-graphics video,
 and checked the app by running it. We tested the app ourselves, reported problems and asked for changes. Every health
 statement in the app is a quote from the NASA and CSA pages, checked by an automated test, not generated text. The
-slides carry a visible note that they were prepared with SI assistance.
+video carries a visible note that it is SI-generated.
