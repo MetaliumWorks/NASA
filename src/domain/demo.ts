@@ -1,6 +1,6 @@
 import { replayOutbox } from './ground';
 import { seededRandom } from './random';
-import { DAILY_STEPS, type DayEntry, type MissionId, type Profile } from './types';
+import { DAILY_STEPS, type CheckInStep, type DayEntry, type MissionId, type Profile } from './types';
 
 /** Every opening of the demo is the same: the history is generated from this seed. */
 export const DEMO_SEED = 20261114;
@@ -104,6 +104,35 @@ export function createDemoProfile(): Profile {
     plan: [],
   };
   return { ...profile, outbox: replayOutbox(profile) };
+}
+
+/**
+ * Plausible readings for one step of today's check-in, close to the profile's baseline.
+ * For the simulated profile only: it lets a demo move through the mandatory check-in
+ * without typing eleven numbers. The same day and step always give the same readings.
+ */
+export function simulatedReadings(p: Profile, step: CheckInStep): DayEntry['values'] {
+  const random = seededRandom(DEMO_SEED + p.missionDay * 97 + DAILY_STEPS.indexOf(step));
+  const around = (centre: number, spread: number) => centre + (random() * 2 - 1) * spread;
+  const base = (id: keyof typeof DEMO_BASELINE, fallback: number) => p.baseline[id] ?? fallback;
+  switch (step) {
+    case 'vitals':
+      return {
+        heartRate: round(around(base('heartRate', 62), 2), 0),
+        bpSystolic: round(around(base('bpSystolic', 118), 3), 0),
+        bpDiastolic: round(around(base('bpDiastolic', 76), 2), 0),
+        bloodSugar: round(around(base('bloodSugar', 90), 4), 0),
+        bodyTemp: round(around(base('bodyTemp', 36.7), 0.2), 1),
+      };
+    case 'sleepMood':
+      return { sleepHours: round(around(base('sleepHours', 7.5), 0.3), 1), mood: base('mood', 4) };
+    case 'intake':
+      return { waterLiters: round(around(base('waterLiters', 2.4), 0.2), 1), appetite: base('appetite', 4), exerciseHours: 1.5 };
+    case 'radiation':
+      return { radiationDose: round(around(0.5, 0.06), 2) };
+    case 'symptoms':
+      return {};
+  }
 }
 
 /** A real profile on its first day: nothing recorded yet. */

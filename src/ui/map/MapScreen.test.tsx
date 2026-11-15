@@ -227,3 +227,31 @@ describe('an empty profile on day 1', () => {
     }
   });
 });
+
+describe('doctor-like additions', () => {
+  test('a flagged system names the condition its findings match, with its source and what points to it', () => {
+    renderMap({ selectedRegion: 'kidneys' });
+    const kidneys = panel('Kidneys');
+    expect(kidneys.getByText('Possible: Dehydration.')).toBeInTheDocument();
+    expect(kidneys.getByText('Points to it: Water: 3-day average 1.3 L, 53% of baseline.')).toBeInTheDocument();
+    expect(kidneys.getByText(/It is not a diagnosis/)).toBeInTheDocument();
+  });
+
+  test('a nominal system names no condition', () => {
+    renderMap({ selectedRegion: 'heart' });
+    expect(panel('Heart & vessels').queryByText(/^Possible:/)).toBeNull();
+  });
+
+  test('the day summary shows what was reported to the ground today and leads to the symptom check', async () => {
+    const { store } = renderMap();
+    const summary = panel('Today');
+    expect(summary.getByText('Urgent: Kidneys')).toBeInTheDocument();
+    await userEvent.click(summary.getByRole('button', { name: 'Start a symptom check' }));
+    expect(store.state.view).toBe('check');
+  });
+
+  test('a day with nothing reported says so', () => {
+    renderMap({ profile: emptyProfile('New crew', 'station', {}) });
+    expect(screen.getByText('Nothing was reported to the ground today.')).toBeInTheDocument();
+  });
+});

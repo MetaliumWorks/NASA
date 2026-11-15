@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { MISSIONS } from '../../content/missions';
 import { REGION_ORDER } from '../../content/regions';
 import { assessAll } from '../../domain/assess';
+import { matchConditions } from '../../domain/possible';
 import type { RegionId, Status } from '../../domain/types';
 import { BodyFigure } from '../../figure/BodyFigure';
 import { Stars } from '../../figure/Stars';
@@ -18,6 +19,7 @@ export function MapScreen() {
   const day = profile.missionDay;
 
   const all = useMemo(() => assessAll(profile, day), [profile, day]);
+  const matches = useMemo(() => matchConditions(profile, day, all), [profile, day, all]);
   const statuses = useMemo(
     () => Object.fromEntries(REGION_ORDER.map((r) => [r, all[r].status])) as Record<RegionId, Status>,
     [all],
@@ -85,7 +87,7 @@ export function MapScreen() {
       <div className="read">
         <div className="read-scroll" ref={scroller}>
           {selectedRegion ? (
-            <RegionPanel key={`${selectedRegion}-${day}`} region={selectedRegion} assessment={all[selectedRegion]} />
+            <RegionPanel key={`${selectedRegion}-${day}`} region={selectedRegion} assessment={all[selectedRegion]} matches={matches} />
           ) : (
             <DaySummary all={all} />
           )}

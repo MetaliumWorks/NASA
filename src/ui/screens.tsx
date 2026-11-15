@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import type { View } from '../state/store';
+import { SymptomCheck } from './check/SymptomCheck';
 import { CheckIn } from './checkin/CheckIn';
 import { SymptomLog } from './log/SymptomLog';
 import { MapScreen } from './map/MapScreen';
@@ -21,9 +22,10 @@ export interface Screen {
 export const SCREENS: Screen[] = [
   { view: 'map', label: 'Body map', render: () => <MapScreen /> },
   { view: 'checkin', label: 'Check-in', render: () => <CheckIn /> },
+  { view: 'check', label: 'Symptom check', render: () => <SymptomCheck /> },
   { view: 'review', label: 'Review', render: () => <Review /> },
   { view: 'log', label: 'Symptom log', render: () => <SymptomLog /> },
-  { view: 'report', label: 'Ground report', render: () => <GroundReport /> },
+  { view: 'report', label: 'Ground link', render: () => <GroundReport /> },
   { view: 'sources', label: 'Sources', render: () => <Sources /> },
   { view: 'setup', label: 'Mission', inNav: false, render: () => <MissionSetup /> },
 ];

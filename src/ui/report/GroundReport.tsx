@@ -1,4 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
+import { MISSIONS } from '../../content/missions';
+import { outbox } from '../../domain/ground';
 import { groundReport, reportFileName } from '../../domain/report';
 import { useApp } from '../../state/store';
 import './report.css';
@@ -34,15 +36,50 @@ export function GroundReport() {
     setStatus('Downloaded');
   };
 
+  const sent = [...outbox(profile)].reverse();
+  const comms = MISSIONS[profile.mission].commsLine;
+
   return (
     <div className="page">
       <div className="page-head">
-        <h2>Ground report</h2>
+        <h2>Ground link</h2>
         <span className="panel-meta mono">Flight day {profile.missionDay}</span>
       </div>
+      <p className="notice-sim">
+        <span className="tag tag-simulated">Simulated link</span> Messages are written to this log. Nothing leaves this device.
+        {comms ? ` Comms on this mission: ${comms}.` : ''}
+      </p>
+
+      <section className="sec" aria-labelledby="sent-title">
+        <h3 id="sent-title">Sent to ground</h3>
+        <div>
+          <p className="hint">
+            The app reports on its own: a confirmed critical reading at once, every system at warning when a check ends, the weekly or
+            monthly review when it finds something that keeps coming back, and a day left without its check-in.
+          </p>
+          {sent.length === 0 ? (
+            <p>Nothing has been sent yet.</p>
+          ) : (
+            <ul className="sent-list">
+              {sent.map((m) => (
+                <li key={m.id}>
+                  <details>
+                    <summary>
+                      <span className="mono sent-day">Day {m.day}</span> <span className={`tag tag-${m.kind}`}>{m.kind}</span>{' '}
+                      <span className="sent-subject">{m.subject}</span>
+                    </summary>
+                    <pre className="sent-body">{m.body}</pre>
+                  </details>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
+
+      <h3 className="report-title">Full report</h3>
       <p className="hint">
-        A summary of the flagged systems for the ground team, built from today’s findings. Nothing is sent from this app: copy the text
-        or download it, and pass it on through your own channel.
+        Every flagged system as of today, to copy or download and pass on through your own channel.
       </p>
 
       <textarea ref={box} className="report-text" aria-label="Report text" readOnly rows={Math.min(26, text.split('\n').length + 1)} value={text} />

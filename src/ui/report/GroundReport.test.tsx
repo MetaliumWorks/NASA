@@ -1,6 +1,6 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createDemoProfile } from '../../domain/demo';
+import { createDemoProfile, emptyProfile } from '../../domain/demo';
 import { groundReport } from '../../domain/report';
 import { renderApp } from '../test-helpers';
 import { GroundReport } from './GroundReport';
@@ -14,7 +14,8 @@ test('the report is shown as read-only text', () => {
 
 test('it says that nothing is sent', () => {
   renderApp(<GroundReport />);
-  expect(screen.getByText(/Nothing is sent/)).toBeInTheDocument();
+  expect(screen.getByText(/Nothing leaves this device/)).toBeInTheDocument();
+  expect(screen.getByText('Simulated link')).toBeInTheDocument();
 });
 
 test('Copy puts the text on the clipboard and says so', async () => {
@@ -66,4 +67,27 @@ test('Download offers the text as a file named after the crew and day', async ()
 test('the Mars report shows the one-way delay', () => {
   renderApp(<GroundReport />, { profile: { ...createDemoProfile(), mission: 'mars' } });
   expect((screen.getByRole('textbox', { name: 'Report text' }) as HTMLTextAreaElement).value).toContain('Comms: Up to 20 minutes one way');
+});
+
+test('the log lists what was sent, newest first, and each message opens', async () => {
+  renderApp(<GroundReport />);
+  const sent = within(screen.getByRole('region', { name: 'Sent to ground' }));
+  const items = sent.getAllByRole('listitem');
+  expect(items.map((li) => li.querySelector('summary')?.textContent)).toEqual([
+    'Day 47 urgent Urgent: Kidneys',
+    'Day 35 missed Missed check-in: flight day 34',
+    'Day 7 review Weekly review: Inner ear & balance',
+  ]);
+  expect(items[0].querySelector('pre')?.textContent).toContain('[WARNING] Kidneys');
+  expect(items[0].querySelector('pre')?.textContent).toContain('SIMULATED DATA');
+});
+
+test('a profile that has sent nothing says so', () => {
+  renderApp(<GroundReport />, { profile: emptyProfile('New crew', 'station', {}) });
+  expect(within(screen.getByRole('region', { name: 'Sent to ground' })).getByText('Nothing has been sent yet.')).toBeInTheDocument();
+});
+
+test('Mars shows the one-way delay next to the simulated-link notice', () => {
+  renderApp(<GroundReport />, { profile: { ...createDemoProfile(), mission: 'mars' } });
+  expect(screen.getByText(/Comms on this mission: Up to 20 minutes one way/)).toBeInTheDocument();
 });

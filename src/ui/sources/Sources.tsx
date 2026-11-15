@@ -1,6 +1,8 @@
+import { CONDITIONS } from '../../content/conditions';
 import { INDICATORS } from '../../content/indicators';
+import { SYMPTOMS } from '../../content/symptoms';
 import { SOURCES } from '../../content/sources';
-import { EXERCISE_TARGET_PER_DAY, LONG_TERM, THRESHOLDS, type ThresholdRule } from '../../content/thresholds';
+import { CRITICAL_FACTOR, criticalLimit, EXERCISE_TARGET_PER_DAY, LONG_TERM, THRESHOLDS, type ThresholdRule } from '../../content/thresholds';
 import { DEMO_DAY } from '../../domain/demo';
 import { formatValue, num } from '../../domain/format';
 import { ALL_INDICATORS, type IndicatorId } from '../../domain/types';
@@ -62,6 +64,25 @@ export function describeRule(id: IndicatorId): { compared: string; caution: stri
   }
 }
 
+/** The critical limit of one reading in words, or "none". */
+export function describeCritical(id: IndicatorId): string {
+  const limit = criticalLimit(id);
+  const unit = INDICATORS[id].unit;
+  if (!limit) return 'none';
+  switch (limit.kind) {
+    case 'percent':
+      return `±${percent(limit.amount)} from baseline`;
+    case 'abovePercent':
+      return `${percent(limit.amount)} above baseline`;
+    case 'above':
+      return `${formatValue(limit.amount, unit)} above baseline`;
+    case 'below':
+      return unit === '1–5' || unit === 'level' ? `${num(limit.amount)} below baseline` : `${formatValue(limit.amount, unit)} below baseline`;
+    case 'underFraction':
+      return `${percent(limit.amount)} of baseline or less`;
+  }
+}
+
 const GROUPS: { title: string; prefix: string }[] = [
   { title: 'Overview pages', prefix: 'hub-' },
   { title: 'The five hazards', prefix: 'hazard-' },
@@ -97,8 +118,8 @@ export function Sources() {
       </div>
       <p className="sources-lead">
         Every health statement in this app comes from the pages below: the five pages of the challenge’s Resources tab and the NASA and
-        CSA pages they link to directly. This app does not diagnose. It shows which system asks for attention and passes on what the
-        source pages recommend.
+        CSA pages they link to directly. This app does not diagnose. It shows which system asks for attention, names the conditions
+        the source pages describe that the findings match, and passes on what the pages recommend.
       </p>
 
       <section className="sec" aria-labelledby="src-nasa">
@@ -150,6 +171,7 @@ export function Sources() {
                 <th scope="col">Compared</th>
                 <th scope="col">Caution</th>
                 <th scope="col">Warning</th>
+                <th scope="col">Critical reading</th>
               </tr>
             </thead>
             <tbody>
@@ -161,6 +183,7 @@ export function Sources() {
                     <td>{rule.compared}</td>
                     <td>{rule.caution}</td>
                     <td>{rule.warning}</td>
+                    <td>{describeCritical(id)}</td>
                   </tr>
                 );
               })}
@@ -209,6 +232,59 @@ export function Sources() {
             Two numbers do come from the sources: the exercise target of {num(EXERCISE_TARGET_PER_DAY)} hours per day{' '}
             <SourceLink source="risk-fitness" /> and the expected bone loss of 1% to 1.5% per month <SourceLink source="risk-bone" />.
             Radiation has no limit in the sources, so the dose is recorded and totalled only.
+          </p>
+        </div>
+      </section>
+
+      <section className="sec" aria-labelledby="src-possible">
+        <h3 id="src-possible">Possible conditions</h3>
+        <div>
+          <p>
+            When findings match a condition that the source pages describe, the app names it as “Possible”. It is a match with the
+            sources, not a diagnosis, and the app names nothing the pages do not describe.
+          </p>
+          <table className="limits" aria-label="Possible conditions">
+            <thead>
+              <tr>
+                <th scope="col">Condition</th>
+                <th scope="col">What points to it</th>
+                <th scope="col">Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              {CONDITIONS.map((c) => {
+                const symptoms = c.symptoms.map((id) => SYMPTOMS.find((s) => s.id === id)?.label ?? id);
+                const indicators = (c.indicators ?? []).map((i) => `${INDICATORS[i.id].label} ${i.direction === 'either' ? 'out of range' : `${i.direction} its limit`}`);
+                const need = c.needs && c.needs > 1 ? `${c.needs} of: ` : '';
+                return (
+                  <tr key={c.id}>
+                    <th scope="row">
+                      {c.name}
+                      {c.urgent && <> <span className="tag tag-urgent">always reported</span></>}
+                    </th>
+                    <td>{[symptoms.length > 0 ? `${need}${symptoms.join(', ')}` : '', ...indicators].filter(Boolean).join('; ')}</td>
+                    <td>
+                      <SourceLink source={c.about.source} />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="sec" aria-labelledby="src-ground">
+        <h3 id="src-ground">Ground link</h3>
+        <div>
+          <p>
+            The link to the ground is simulated. A message the app “sends” is written to the log on the Ground link screen; nothing leaves
+            this device. The app reports a critical reading once it is confirmed, every system at warning when a check ends, the weekly
+            or monthly review when it finds something that keeps coming back, and a day left without its mandatory check-in.
+          </p>
+          <p className="hint">
+            A critical reading is a single reading {CRITICAL_FACTOR} times as far from baseline as its warning limit. The check-in asks to
+            measure again or confirm it. This limit, too, is the team’s own setting.
           </p>
         </div>
       </section>

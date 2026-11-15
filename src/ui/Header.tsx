@@ -3,6 +3,7 @@ import { stepsDoneToday, streak } from '../domain/streak';
 import { DAILY_STEPS } from '../domain/types';
 import { useApp } from '../state/store';
 import './app.css';
+import { checkInRequired, OPEN_WHILE_LOCKED, shownView } from './gate';
 import { SCREENS } from './screens';
 
 /** On every screen: what this is, whose data it is, where the mission stands, and the way around. */
@@ -10,7 +11,9 @@ export function Header() {
   const { state, dispatch } = useApp();
   const { profile } = state;
   const length = MISSIONS[profile.mission].days;
-  const current = SCREENS.some((s) => s.view === state.view) ? state.view : SCREENS[0].view;
+  const shown = shownView(state);
+  const current = SCREENS.some((s) => s.view === shown) ? shown : SCREENS[0].view;
+  const locked = checkInRequired(profile);
 
   return (
     <header className="header">
@@ -51,6 +54,8 @@ export function Header() {
             type="button"
             className="tab"
             aria-current={s.view === current ? 'page' : undefined}
+            disabled={locked && !OPEN_WHILE_LOCKED.includes(s.view)}
+            title={locked && !OPEN_WHILE_LOCKED.includes(s.view) ? 'Opens when today’s check-in is done' : undefined}
             onClick={() => dispatch({ type: 'view', view: s.view })}
           >
             {s.label}

@@ -6,7 +6,7 @@ import { entryFor } from '../../domain/series';
 import type { IndicatorId } from '../../domain/types';
 import { useApp } from '../../state/store';
 import { SourceLink } from '../SourceLink';
-import { NumberField, ScaleField } from './CheckIn';
+import { NumberField, ScaleField } from './fields';
 import { ReactionTest } from './ReactionTest';
 import { VisionTest } from './VisionTest';
 

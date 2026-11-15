@@ -358,3 +358,23 @@
   margin: 2px 0 0;
   font-size: 13px;
 }
+
+.possible {
+  border-left: 3px solid var(--caution);
+  padding-left: 12px;
+}
+
+.possible[data-status='warning'] {
+  border-left-color: var(--warning);
+}
+
+.possible-signs {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.summary-check {
+  font-size: 15px;
+  padding: 7px 14px;
+  border-radius: 8px;
+}

@@ -6,6 +6,8 @@ import { REGIONS } from '../../content/regions';
 import { SYMPTOMS } from '../../content/symptoms';
 import { EXERCISE_TARGET_PER_DAY, THRESHOLDS } from '../../content/thresholds';
 import { formatDelta, formatValue, num } from '../../domain/format';
+import { matchesFor, type ConditionMatch } from '../../domain/possible';
+import { NOT_A_DIAGNOSIS } from '../../domain/report';
 import { valuesFor } from '../../domain/series';
 import { expectedBoneLoss, indicatorStatus, type Assessment, type Finding } from '../../domain/status';
 import type { IndicatorId, Profile, RegionId } from '../../domain/types';
@@ -80,7 +82,7 @@ function IndicatorFinding(p: { profile: Profile; id: IndicatorId; finding: Findi
 }
 
 /** The selected region as a short report: Findings, Impression, Recommendation. */
-export function RegionPanel(p: { region: RegionId; assessment: Assessment }) {
+export function RegionPanel(p: { region: RegionId; assessment: Assessment; matches?: ConditionMatch[] }) {
   const { state, dispatch } = useApp();
   const { profile } = state;
   const day = profile.missionDay;
@@ -114,6 +116,7 @@ export function RegionPanel(p: { region: RegionId; assessment: Assessment }) {
       return next;
     });
 
+  const possible = matchesFor(p.matches ?? [], p.region);
   const totalDose = valuesFor(profile, 'radiationDose', 1, day).reduce((sum, v) => sum + v.value, 0);
   const boneLoss = expectedBoneLoss(day);
 
@@ -203,6 +206,16 @@ export function RegionPanel(p: { region: RegionId; assessment: Assessment }) {
       <div className="sec">
         <h3>Impression</h3>
         <div className="impression">
+          {possible.map((m) => (
+            <div key={m.condition.id} className="possible" data-status={m.status}>
+              <p>
+                <span className="what">Possible: {m.condition.name}.</span> {m.condition.about.text}{' '}
+                <SourceLink source={m.condition.about.source} />
+              </p>
+              <p className="possible-signs">Points to it: {m.signs.join('; ')}.</p>
+            </div>
+          ))}
+          {possible.length > 0 && <p className="finding-note">{NOT_A_DIAGNOSIS}</p>}
           {def.impression.map((item) => (
             <p key={item.quote}>
               {item.text} <SourceLink source={item.source} />
