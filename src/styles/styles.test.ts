@@ -85,3 +85,11 @@ describe('contrast', () => {
     expect(ratio(token('control'), token('bg'))).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe('a scrolling page', () => {
+  test('holds its hidden labels, so the whole window never scrolls', () => {
+    const page = /\n\.page \{([\s\S]*?)\n\}/.exec(read('src/ui/app.css'))?.[1] ?? '';
+    expect(page).toMatch(/overflow-y:\s*auto/);
+    expect(page).toMatch(/position:\s*relative/);
+  });
+});

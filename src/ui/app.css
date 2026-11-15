@@ -208,6 +208,8 @@
 .page {
   height: 100%;
   overflow-y: auto;
+  /* Holds the absolutely placed hidden labels inside the scroll, or they stretch the window. */
+  position: relative;
   padding: 28px max(40px, calc((100% - 1040px) / 2)) 48px;
   background: var(--bg);
   scrollbar-color: var(--line) transparent;
