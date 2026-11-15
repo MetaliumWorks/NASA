@@ -76,6 +76,25 @@ describe('slow drift', () => {
     expect(found.filter((f) => f.label === 'trending')).toEqual([]);
   });
 
+  test('a 1 to 5 scale that slides by a few more low days each week is still trending', () => {
+    // Whole numbers only: the median stays at 4 for three weeks while the average falls 4, 3.86, 3.71, 3.43.
+    const weeks = [
+      [4, 4, 4, 4, 4, 4, 4],
+      [4, 4, 4, 4, 4, 3, 4],
+      [4, 3, 4, 4, 3, 4, 4],
+      [3, 4, 3, 4, 3, 4, 3],
+    ];
+    const rows = weeks.flatMap((values, week) => values.map((mood, i) => ({ day: 20 + week * 7 + i, mood })));
+    const found = longTermFindings(profile(rows, { mood: 4 }), 'brain', 47);
+    expect(found).toContainEqual(expect.objectContaining({ indicator: 'mood', label: 'trending' }));
+    expect(found.find((f) => f.label === 'trending')?.reason).toBe('Weekly average has moved from 4 of 5 to 3.4 of 5 over four weeks');
+  });
+
+  test('a measured indicator says it compared weekly medians', () => {
+    const f = longTermFindings(weeklySleep([7.5, 7.2, 6.95, 6.7]), 'brain', 47).find((x) => x.label === 'trending');
+    expect(f?.reason).toBe('Weekly median has moved from 7.5 h to 6.7 h over four weeks');
+  });
+
   test('a drift below the floor is not trending', () => {
     expect(longTermFindings(weeklySleep([7.5, 7.4, 7.3, 7.2]), 'brain', 47)).toEqual([]);
   });

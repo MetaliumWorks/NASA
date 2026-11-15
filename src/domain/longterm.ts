@@ -1,7 +1,7 @@
 import { REGIONS } from '../content/regions';
 import { SYMPTOMS } from '../content/symptoms';
 import { LONG_TERM, THRESHOLDS } from '../content/thresholds';
-import { median, valuesFor } from './series';
+import { mean, median, valuesFor } from './series';
 import { EPS, indicatorStatus, withUnit, type Finding } from './status';
 import type { IndicatorId, Profile, RegionId } from './types';
 
@@ -61,8 +61,9 @@ function sustained(p: Profile, id: IndicatorId, day: number): Finding | null {
 /**
  * Slow drift: the week's typical value has moved further from baseline three weeks
  * running, and by at least half the caution limit in total. It fires inside the daily
- * limit; its job is the slide that no single day shows. The typical value is the median,
- * so one extreme reading (a critical one, say) is not read as four weeks of drift.
+ * limit; its job is the slide that no single day shows. For a measured value the typical
+ * value is the median, so one extreme reading (a critical one, say) is not read as four
+ * weeks of drift; for a 1 to 5 scale it is the average.
  */
 function trending(p: Profile, id: IndicatorId, day: number): Finding | null {
   const rule = THRESHOLDS[id];
@@ -71,12 +72,18 @@ function trending(p: Profile, id: IndicatorId, day: number): Finding | null {
   const hasBase = typeof base === 'number' && Number.isFinite(base) && base !== 0;
   if (rule.kind !== 'scaleAvg3' && !hasBase) return null;
 
-  // Weekly medians, newest first: week k covers [day - 7k - 6, day - 7k].
-  const means: number[] = [];
+  // A measured value can have one extreme reading in a week, so its week is summed up by the
+  // median. A 1 to 5 scale has no extreme readings and only whole steps: its median would sit
+  // still while low days pile up, so its week is the average.
+  const scale = rule.kind === 'scaleAvg3';
+  const typical = scale ? mean : median;
+
+  // One typical value per week, newest first: week k covers [day - 7k - 6, day - 7k].
+  const weeks: number[] = [];
   for (let k = 0; k < LONG_TERM.trendWeeks; k++) {
     const values = valuesFor(p, id, day - 7 * k - 6, day - 7 * k).map((v) => v.value);
     if (values.length < LONG_TERM.trendMinPerWeekValues) return null;
-    means.push(median(values) as number);
+    weeks.push(typical(values) as number);
   }
 
   // Distance from baseline in the direction that is bad for this indicator.
@@ -94,7 +101,7 @@ function trending(p: Profile, id: IndicatorId, day: number): Finding | null {
         return b - m;
     }
   };
-  const d = means.map(away);
+  const d = weeks.map(away);
   for (let k = 0; k < d.length - 1; k++) {
     if (!(d[k] > d[k + 1] + EPS)) return null; // each week further away than the one before
   }
@@ -103,14 +110,14 @@ function trending(p: Profile, id: IndicatorId, day: number): Finding | null {
   if (newest - oldest < rule.trendMin - EPS) return null;
   if (hasBase && newest <= EPS) return null; // only closing in on baseline from the good side
 
-  const then = means[means.length - 1];
+  const then = weeks[weeks.length - 1];
   return {
     indicator: id,
     status: 'caution',
     due: false,
-    value: means[0],
+    value: weeks[0],
     label: 'trending',
-    reason: `Weekly median has moved from ${withUnit(id, then)} to ${withUnit(id, means[0])} over four weeks`,
+    reason: `Weekly ${scale ? 'average' : 'median'} has moved from ${withUnit(id, then)} to ${withUnit(id, weeks[0])} over four weeks`,
   };
 }
 
