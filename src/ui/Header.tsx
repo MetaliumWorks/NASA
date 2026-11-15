@@ -3,6 +3,7 @@ import { stepsDoneToday, streak } from '../domain/streak';
 import { DAILY_STEPS } from '../domain/types';
 import { getLang, setLang } from '../i18n/translate';
 import { useApp } from '../state/store';
+import { Presentation } from './present/Presentation';
 import './app.css';
 import { checkInRequired, OPEN_WHILE_LOCKED, shownView } from './gate';
 import { SCREENS } from './screens';
@@ -52,6 +53,7 @@ export function Header() {
           </span>
           <span>Streak {streak(profile)} d</span>
         </div>
+        <Presentation />
         <button
           type="button"
           className="btn btn-quiet"
