@@ -2,6 +2,7 @@ import { REGIONS } from '../../content/regions';
 import { INDICATORS } from '../../content/indicators';
 import { flagged } from '../../domain/assess';
 import { dueToday } from '../../domain/due';
+import { sentOn } from '../../domain/ground';
 import { reviewDue } from '../../domain/review';
 import type { Assessment } from '../../domain/status';
 import { stepsDoneToday } from '../../domain/streak';
@@ -19,6 +20,7 @@ export function DaySummary(p: { all: Record<RegionId, Assessment> }) {
   const steps = stepsDoneToday(profile);
   const review = reviewDue(profile.missionDay);
   const due = dueToday(profile);
+  const sent = sentOn(profile, profile.missionDay);
 
   let lead = `All ${Object.keys(p.all).length} systems nominal`;
   if (attention.length === 1) lead = '1 system needs attention';
@@ -100,6 +102,40 @@ export function DaySummary(p: { all: Record<RegionId, Assessment> }) {
           <div className="actions">
             <button type="button" className="btn" onClick={() => dispatch({ type: 'view', view: 'checkin' })}>
               {steps === 0 ? 'Start check-in' : steps < DAILY_STEPS.length ? 'Continue check-in' : 'Review today’s entries'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="sec">
+        <h3>Right now</h3>
+        <div>
+          <p>Not feeling right? Say what you notice; the app asks what it needs and tells you what it finds.</p>
+          <div className="actions">
+            <button type="button" className="btn btn-quiet summary-check" onClick={() => dispatch({ type: 'view', view: 'check' })}>
+              Start a symptom check
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="sec">
+        <h3>Ground link</h3>
+        <div>
+          {sent.length === 0 ? (
+            <p className="hint">Nothing was reported to the ground today.</p>
+          ) : (
+            <ul className="sent-today">
+              {sent.map((m) => (
+                <li key={m.id}>
+                  <span className={`tag tag-${m.kind}`}>{m.kind}</span> {m.subject}
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="actions">
+            <button type="button" className="btn btn-quiet summary-check" onClick={() => dispatch({ type: 'view', view: 'report' })}>
+              Open ground link
             </button>
           </div>
         </div>

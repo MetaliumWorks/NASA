@@ -15,8 +15,8 @@ test('the week view shows symptom days, flagged days and long-term labels', () =
   const brain = row('Brain, mind & sleep');
   expect(brain.getByText('Trouble sleeping · 3 of 7 days')).toBeInTheDocument();
   expect(brain.getByText('recurring')).toBeInTheDocument();
-  expect(row('Kidneys').getByText('2 days at warning, 1 at caution')).toBeInTheDocument();
-  expect(row('Bones').getByText('3 days at caution')).toBeInTheDocument();
+  expect(row('Kidneys').getByText('1 day at warning, 1 at caution')).toBeInTheDocument();
+  expect(row('Bones').getByText('2 days at caution')).toBeInTheDocument();
   expect(row('Heart & vessels').getByText('No flagged days')).toBeInTheDocument();
   expect(screen.getAllByRole('row')).toHaveLength(13); // 12 systems and the header row
 });

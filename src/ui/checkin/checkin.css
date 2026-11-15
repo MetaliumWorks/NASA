@@ -323,3 +323,43 @@
     columns: 1;
   }
 }
+
+/* A reading far from baseline: measure again or confirm. */
+.field-critical {
+  margin-top: 6px;
+  max-width: 52ch;
+  border: 1.5px solid var(--warning);
+  border-radius: 8px;
+  padding: 8px 12px 10px;
+  font-size: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.symptom-none {
+  margin-bottom: 10px;
+}
+
+.ask-block {
+  margin-bottom: 18px;
+}
+
+.ask-block h4 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ask-test {
+  margin-top: 12px;
+}
+
+.check-earlier {
+  margin-top: 22px;
+}
+
+/* A tick box inside a field keeps its own layout, not that of the field's label. */
+.field label.check {
+  display: grid;
+  font-weight: 400;
+  margin-bottom: 0;
+}

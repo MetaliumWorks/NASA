@@ -1,5 +1,6 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { CONDITIONS } from '../../content/conditions';
 import { INDICATORS } from '../../content/indicators';
 import { SOURCES } from '../../content/sources';
 import { createDemoProfile } from '../../domain/demo';
@@ -77,4 +78,28 @@ test('simulated data is explained and the demo can be reset', async () => {
 test('the app says it does not diagnose', () => {
   renderApp(<Sources />);
   expect(screen.getByText(/does not diagnose/)).toBeInTheDocument();
+});
+
+test('critical limits are listed beside the others, twice as far as the warning', () => {
+  renderApp(<Sources />);
+  const table = within(screen.getByRole('table', { name: 'Daily limits' }));
+  expect(table.getByRole('row', { name: /Heart rate.*±25% from baseline.*±50% from baseline/ })).toBeInTheDocument();
+  expect(table.getByRole('row', { name: /Body temperature.*2 °C above baseline$/ })).toBeInTheDocument();
+  expect(table.getByRole('row', { name: /Water.*20% of baseline or less/ })).toBeInTheDocument();
+  expect(table.getByRole('row', { name: /Mood.*none$/ })).toBeInTheDocument();
+});
+
+test('every possible condition is listed with its signs and source, and declared not a diagnosis', () => {
+  renderApp(<Sources />);
+  const table = within(screen.getByRole('table', { name: 'Possible conditions' }));
+  expect(table.getAllByRole('row')).toHaveLength(CONDITIONS.length + 1);
+  expect(table.getByRole('row', { name: /Mild hypoxia.*2 of: Headache, Confusion, Blurred vision, Trouble sleeping/ })).toBeInTheDocument();
+  expect(table.getByRole('row', { name: /Dehydration.*Water below its limit/ })).toBeInTheDocument();
+  expect(table.getByRole('row', { name: /Decompression sickness.*always reported/ })).toBeInTheDocument();
+  expect(screen.getByText(/It is a match with the\s+sources, not a diagnosis/)).toBeInTheDocument();
+});
+
+test('the ground link is declared simulated', () => {
+  renderApp(<Sources />);
+  expect(screen.getByText(/The link to the ground is simulated/)).toBeInTheDocument();
 });

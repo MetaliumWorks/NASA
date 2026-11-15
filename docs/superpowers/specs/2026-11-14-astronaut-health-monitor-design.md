@@ -1,6 +1,6 @@
 # Astronot Sağlık İzleme Uygulaması: Tasarım
 
-Tarih: 2026-11-14 · Durum: onay bekliyor
+Tarih: 2026-11-14 · Durum: uygulandı · Son değişiklik: 2026-11-15 (bölüm 15, ikinci tur)
 
 Bu belgede "**Karar (ekip)**" ekibin konuşmada verdiği kararı, "**Karar (Claude)**" ekibin yapım yolunu bana bıraktığı ya da emin olmadığı yerde benim verdiğim kararı gösterir. İkinci türdekiler itiraza açıktır.
 
@@ -31,11 +31,11 @@ Ekibin öne çıkardığı iki şey: uygulama güzel görünmeli ve içindeki he
 **Hedef olmayanlar**
 
 - Kamera ile ölçüm, cihaz ya da sensör bağlantısı.
-- Sunucu, hesap, birden çok mürettebat, gerçek veri gönderimi.
+- Sunucu, hesap, birden çok mürettebat, gerçek veri gönderimi. (İkinci turda "üsse bildirim" eklendi; simülasyondur, bkz. bölüm 15.)
 - Rozet, seviye, puan tablosu. Oyunlaştırma yalnızca kayıt serisidir.
 - Türkçe arayüz. Arayüz İngilizce.
 - Telefon öncelikli yerleşim. Hedef dizüstü ve projeksiyon (1280 piksel ve üstü genişlik); daha dar ekranda bozulmaması yeterli.
-- Teşhis koymak. Uygulama ilgi isteyen yeri gösterir ve kaynaktaki öneriyi aktarır.
+- Teşhis koymak. Uygulama ilgi isteyen yeri gösterir ve kaynaktaki öneriyi aktarır. (İkinci turda kaynaklarda tarif edilen durumlar "Possible" diye adlandırılıyor; teşhis değildir, bkz. bölüm 15.)
 
 **Karşı-hedefler** (çalışsa bile başarısızlık sayılır)
 
@@ -284,3 +284,43 @@ Süre yetmezse aşağıdan yukarı kesilir.
 - Taslak şablonu ve çizim işleme betiği: `docs/mockups/lightbox-v4.tpl.html`, `docs/mockups/build_v4.py`
 - Kaynak sayfa metinleri: `docs/sources/` (51 dosya, her birinin başında adresi)
 - Özgün çizimler: `assets-source/`
+
+## 15. İkinci tur: zorunlu kayıt, belirti kontrolü, olası durumlar, yer bağlantısı
+
+Ekibin 2026-11-15 isteği: uygulama "doktor gibi" çalışsın. Aşağıdaki dört karar ekibe soruldu ve ekip seçti; ayrıntılar benim.
+
+### 15.1 Kararlar
+
+- **Üsse bildirim simülasyondur (Karar, ekip).** Sunucu yok. Uygulamanın "gönderdiği" her mesaj Ground link ekranındaki kutuya yazılır ve "Simulated link" diye etiketlenir; cihazdan hiçbir şey çıkmaz. Mars görevinde kaynaktaki gecikme satırı gösterilir.
+- **Yalnızca kaynaklardaki durumlar adlandırılır (Karar, ekip).** Belirti ve ölçümler, 51 sayfada tarif edilen durumlarla eşleştirilir ve "Possible: …" diye, kaynağı ve "teşhis değildir" notuyla söylenir. Kaynak kuralı aynen geçerlidir: her durumun `about` metni kaynak kimliği ve birebir alıntı taşır, test denetler. 17 durum `src/content/conditions.ts` içindedir.
+- **Günlük kayıt zorunludur ve uygulamayı kilitler (Karar, ekip).** Yeni gün başlayınca beş adım bitene kadar diğer ekranlar kapalıdır; yalnızca belirti kontrolü ve görev ekranı açık kalır. Bütün ölçümler zorunludur. Demo, bugünün kaydı tamamlanmış olarak vücut haritasında açılır; kilit "Advance one day" sonrası görünür.
+- **"Absürt değer" ayrı bir kritik sınırdır (Karar, ekip).** Tek bir okuma, temel değerden uyarı sınırının iki katı kadar uzaktaysa kritiktir (nabız ±%50, tansiyon ±%40, kan şekeri ±%60, ateş +2 °C, uyku 4 saat az, su temel değerin %20'si ve altı). Uygulama "yeniden ölç ya da onayla" der; onaylanan okuma hemen üsse bildirilir. Katsayı `src/content/thresholds.ts` içinde tek sayıdır (`CRITICAL_FACTOR`) ve bütün eşikler gibi ekibin ayarıdır.
+
+### 15.2 Ne zaman üsse mesaj gider (Karar, Claude)
+
+| Olay | Mesaj |
+|---|---|
+| Kritik okuma onaylandı | Hemen, o adım kaydedilirken |
+| Günlük kayıt tamamlandı ve bir sistem warning | Kayıt tamamlanınca, warning olan sistemler tek mesajda |
+| Belirti kontrolü ya da haftalık kayıt bir sistemi warning yaptı | Hemen |
+| 7. ya da 30. günün kaydı tamamlandı ve değerlendirme yinelenen bir şey buldu | Haftalık ya da aylık değerlendirme mesajı |
+| Gün, zorunlu kaydı yapılmadan bitti | Ertesi gün başlarken "Missed check-in" |
+
+- Caution düzeyi astronota söylenir, üsse gitmez; bir sonraki değerlendirmeye girer.
+- Aynı sistem aynı gün iki kez bildirilmez; warning sürdükçe her gün yeniden bildirilir.
+- Kritik okuma kendi gününde, ortalamaya bakılmadan, warning sayılır.
+
+### 15.3 Günlük kayıt sonucu ve belirti kontrolü (Karar, Claude)
+
+- Günlük kayıt bitince uygulama ne bulduğunu söyler: ilgi isteyen sistemler, eşleşen olası durumlar, ne yapılacağı ve üsse ne gittiği.
+- **Belirti kontrolü** istenen zaman açılır. Astronot belirtisini işaretler; uygulama aynı durumun kaynaktaki diğer belirtilerini sorar ve ayırt etmeye yarayan ölçümleri ister (örn. baş dönmesi hissinde tansiyon ve nabız, bulanık görmede görme testi). Ölçüm gerekmiyorsa doğrudan sonucu söyler. Girilen belirti ve ölçümler o günün kaydına eklenir; kontrol günlük kaydın bir adımı sayılmaz.
+- Simülasyon profilinde "Fill with simulated readings" düğmesi adımı temel değere yakın okumalarla doldurur. Zorunlu on bir ölçümü sunumda elle yazmamak içindir; gerçek profilde yoktur.
+
+### 15.4 Demo değişiklikleri (Karar, Claude)
+
+- 47. günün kaydı tamamdır. Hikâyenin son haftası bugün biter: egzersiz 41–47. günler, su 45–47. günler, uyku sorunu 43, 45 ve 47. günler. Seri 13 gündür.
+- Ground link kutusu, 47 günün kurallara göre üreteceği mesajlarla dolu gelir: 7. gün haftalık değerlendirme (uzay tutması), 35. gün "34. günün kaydı yapılmadı", 47. gün "Urgent: Kidneys".
+
+### 15.5 Ağız sağlığı: iptal (Karar, ekip)
+
+Ekip ağız sağlığını da istedi, sonra iptal etti. Kaynak sayfalarında diş ve diş eti hakkında hiçbir cümle yok; ağızla ilgili yalnızca uçuk ve tükürük örneği geçiyor. Uygulama 12 sistemle kalır; uçuk belirtisi Blood & immunity altındadır.

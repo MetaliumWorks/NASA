@@ -1,12 +1,16 @@
 import { render, type RenderResult } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { createDemoProfile } from '../domain/demo';
+import { halfDone } from '../domain/test-helpers';
 import { entryFor } from '../domain/series';
 import type { DayEntry } from '../domain/types';
 import { AppProvider, useApp, type AppState } from '../state/store';
 
 /** The demo on its opening screen: map view, nothing selected, organs hidden. */
 export const demoState: AppState = { profile: createDemoProfile(), view: 'map', selectedRegion: null, showOrgans: false };
+
+/** The demo with today's check-in half done: three steps saved, nothing reported, two steps to go. */
+export const halfDoneState: AppState = { ...demoState, profile: halfDone(demoState.profile) };
 
 export function todayEntry(state: AppState): DayEntry {
   const entry = entryFor(state.profile, state.profile.missionDay);

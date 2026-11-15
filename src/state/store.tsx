@@ -3,18 +3,21 @@ import { INDICATORS } from '../content/indicators';
 import { MISSIONS } from '../content/missions';
 import { REGION_ORDER } from '../content/regions';
 import { createDemoProfile, emptyProfile } from '../domain/demo';
+import { composeMissed, dayComplete, outbox, withAlerts } from '../domain/ground';
 import {
   ALL_INDICATORS,
   type CheckInStep,
   type DayEntry,
+  type GroundMessage,
   type IndicatorId,
   type MissionId,
   type Profile,
   type RegionId,
+  type SpotCheck,
 } from '../domain/types';
 
-export type View = 'map' | 'checkin' | 'review' | 'log' | 'report' | 'sources' | 'setup';
-const VIEWS: View[] = ['map', 'checkin', 'review', 'log', 'report', 'sources', 'setup'];
+export type View = 'map' | 'checkin' | 'check' | 'review' | 'log' | 'report' | 'sources' | 'setup';
+const VIEWS: View[] = ['map', 'checkin', 'check', 'review', 'log', 'report', 'sources', 'setup'];
 
 export interface AppState {
   profile: Profile;
@@ -34,8 +37,18 @@ export type Action =
       symptoms?: string[];
       otherDiscomfort?: string;
       journal?: string;
+      /** Readings of this step that are far from baseline and were confirmed as measured. */
+      critical?: IndicatorId[];
     }
   | { type: 'saveWeekly'; values: Partial<Record<IndicatorId, number>> }
+  | {
+      /** A symptom check outside the daily check-in. */
+      type: 'saveCheck';
+      symptoms: string[];
+      values: Partial<Record<IndicatorId, number>>;
+      note?: string;
+      critical?: IndicatorId[];
+    }
   | { type: 'advanceDay' }
   | { type: 'resetDemo' }
   | { type: 'setMission'; mission: MissionId }
@@ -81,7 +94,8 @@ export function reducer(s: AppState, a: Action): AppState {
       return { ...s, showOrgans: !s.showOrgans };
 
     case 'saveStep': {
-      const profile = updateToday(s.profile, (entry) => {
+      const wasComplete = dayComplete(s.profile, s.profile.missionDay);
+      const saved = updateToday(s.profile, (entry) => {
         // The step owns its indicators: a field left empty this time is removed.
         const values: DayEntry['values'] = {};
         for (const id of ALL_INDICATORS) {
@@ -99,17 +113,51 @@ export function reducer(s: AppState, a: Action): AppState {
         if (other !== undefined) next.otherDiscomfort = other;
         const journal = optionalText(entry.journal, a.journal);
         if (journal !== undefined) next.journal = journal;
+        // The step owns the confirmations of its own readings, too.
+        const critical = [...(entry.critical ?? []).filter((id) => INDICATORS[id].step !== a.step), ...(a.critical ?? [])];
+        if (critical.length > 0) next.critical = critical;
         return next;
       });
-      return { ...s, profile };
+      const completed = !wasComplete && dayComplete(saved, saved.missionDay);
+      return { ...s, profile: withAlerts(saved, { origin: 'checkin', critical: a.critical, completed }) };
     }
 
-    case 'saveWeekly':
-      return { ...s, profile: updateToday(s.profile, (entry) => ({ ...entry, values: { ...entry.values, ...a.values } })) };
+    case 'saveWeekly': {
+      const saved = updateToday(s.profile, (entry) => ({ ...entry, values: { ...entry.values, ...a.values } }));
+      return { ...s, profile: withAlerts(saved, { origin: 'weekly' }) };
+    }
+
+    case 'saveCheck': {
+      const note = a.note?.trim() || undefined;
+      const saved = updateToday(s.profile, (entry) => {
+        // The day keeps everything reported on it; a new reading replaces the earlier one.
+        const next: DayEntry = {
+          ...entry,
+          values: { ...entry.values, ...a.values },
+          symptoms: [...new Set([...entry.symptoms, ...a.symptoms])],
+        };
+        if (note && !(entry.otherDiscomfort ?? '').includes(note)) {
+          next.otherDiscomfort = entry.otherDiscomfort ? `${entry.otherDiscomfort}; ${note}` : note;
+        }
+        const critical = [...new Set([...(entry.critical ?? []), ...(a.critical ?? [])])];
+        if (critical.length > 0) next.critical = critical;
+        return next;
+      });
+      const check: SpotCheck = { day: saved.missionDay, symptoms: [...new Set(a.symptoms)], values: { ...a.values }, ...(note ? { note } : {}) };
+      const recorded = { ...saved, checks: [...(saved.checks ?? []), check] };
+      return { ...s, profile: withAlerts(recorded, { origin: 'check', critical: a.critical }) };
+    }
 
     case 'advanceDay': {
-      const missionDay = Math.min(s.profile.missionDay + 1, MISSIONS[s.profile.mission].days);
-      return { ...s, profile: { ...s.profile, missionDay, reachedDay: Math.max(reached(s.profile), missionDay) } };
+      const leaving = s.profile.missionDay;
+      const missionDay = Math.min(leaving + 1, MISSIONS[s.profile.mission].days);
+      let profile: Profile = { ...s.profile, missionDay, reachedDay: Math.max(reached(s.profile), missionDay) };
+      // The daily check-in is mandatory: a day that ends without it is reported to the ground.
+      if (missionDay !== leaving && !dayComplete(s.profile, leaving)) {
+        const messages = outbox(s.profile);
+        profile = { ...profile, outbox: [...messages, composeMissed(s.profile, leaving, `g${messages.length + 1}`)] };
+      }
+      return { ...s, profile };
     }
 
     case 'resetDemo':
@@ -163,6 +211,25 @@ function isEntry(x: unknown): x is DayEntry {
   );
 }
 
+const KINDS = ['critical', 'urgent', 'review', 'missed'];
+
+function isMessage(x: unknown): x is GroundMessage {
+  return (
+    isObject(x) &&
+    typeof x.id === 'string' &&
+    isDay(x.day) &&
+    KINDS.includes(x.kind as string) &&
+    typeof x.origin === 'string' &&
+    typeof x.subject === 'string' &&
+    typeof x.body === 'string' &&
+    Array.isArray(x.regions)
+  );
+}
+
+function isCheck(x: unknown): x is SpotCheck {
+  return isObject(x) && isDay(x.day) && Array.isArray(x.symptoms) && isObject(x.values);
+}
+
 function isProfile(x: unknown): x is Profile {
   return (
     isObject(x) &&
@@ -189,13 +256,18 @@ export function loadState(storage: Pick<Storage, 'getItem'>): AppState {
     if (!raw) return initialState();
     const data: unknown = JSON.parse(raw);
     if (!isObject(data) || !isProfile(data.profile)) return initialState();
-    const { reachedDay, ...profile } = data.profile;
+    const { reachedDay, outbox: savedOutbox, checks: savedChecks, ...profile } = data.profile as Profile & Record<string, unknown>;
+    const messages = Array.isArray(savedOutbox) ? savedOutbox.filter(isMessage) : [];
+    const checks = Array.isArray(savedChecks) ? savedChecks.filter(isCheck) : [];
     return {
       profile: {
         ...profile,
         missionDay: Math.min(profile.missionDay, MISSIONS[profile.mission].days),
         // Kept only when it is a real day; anything else is dropped rather than trusted.
         ...(isDay(reachedDay) ? { reachedDay } : {}),
+        // The same for the ground log and the symptom checks: what is not of the right shape is left out.
+        ...(messages.length > 0 ? { outbox: messages } : {}),
+        ...(checks.length > 0 ? { checks } : {}),
       },
       view: VIEWS.includes(data.view as View) ? (data.view as View) : 'map',
       selectedRegion: REGION_ORDER.includes(data.selectedRegion as RegionId) ? (data.selectedRegion as RegionId) : null,

@@ -1,5 +1,7 @@
 import { assessAll } from './assess';
 import { createDemoProfile, emptyProfile } from './demo';
+import { criticalReadings, dayComplete } from './ground';
+import { matchConditions } from './possible';
 import { recent } from './series';
 import { stepsDoneToday, streak } from './streak';
 import { ALL_INDICATORS, DAILY_STEPS, type RegionId } from './types';
@@ -27,15 +29,39 @@ test('demo tells the spec story and nothing else', () => {
   );
 });
 
-test('the only findings that flag are the three of the story', () => {
+test('the only findings that flag are those of the story', () => {
   const flagging = Object.values(assessAll(demo, 47))
     .flatMap((a) => a.findings.map((f) => ({ region: a.region, what: f.indicator ?? f.symptom, status: f.status, label: f.label })))
     .filter((f) => f.status !== 'nominal');
   expect(flagging).toEqual([
+    { region: 'brain', what: 'troubleSleeping', status: 'caution', label: undefined }, // reported today
     { region: 'brain', what: 'troubleSleeping', status: 'caution', label: 'recurring' },
     { region: 'bones', what: 'exerciseHours', status: 'caution', label: undefined },
     { region: 'kidneys', what: 'waterLiters', status: 'warning', label: undefined },
   ]);
+});
+
+test('no reading in the demo is critical', () => {
+  for (const e of demo.entries) expect(criticalReadings(demo, e.day), `day ${e.day}`).toEqual([]);
+});
+
+test('the story points to the conditions the sources describe', () => {
+  const matches = matchConditions(demo, 47, assessAll(demo, 47));
+  expect(matches.map((m) => [m.condition.id, m.status])).toEqual([
+    ['dehydration', 'warning'],
+    ['sleepLoss', 'caution'],
+    ['muscleAndBoneLoss', 'caution'],
+  ]);
+});
+
+test('the ground log holds what the 47 days would have sent', () => {
+  expect(demo.outbox?.map((m) => [m.id, m.day, m.kind, m.subject])).toEqual([
+    ['g1', 7, 'review', 'Weekly review: Inner ear & balance'],
+    ['g2', 35, 'missed', 'Missed check-in: flight day 34'],
+    ['g3', 47, 'urgent', 'Urgent: Kidneys'],
+  ]);
+  expect(demo.outbox?.every((m) => m.body.split('\n')[1] === 'SIMULATED DATA')).toBe(true);
+  expect(demo.outbox?.[0].body).toContain('  Possible: Space motion sickness (NASA: Risk of Altered Sensorimotor and Vestibular Function)');
 });
 
 test('nothing was flagged before the story begins', () => {
@@ -49,29 +75,32 @@ test('demo matches the mockup numbers', () => {
   expect(recent(demo, 'exerciseHours', 47, 7)).toEqual([1.5, 1.0, 0.5, 1.5, 1.0, 0, 1.0]);
   expect(recent(demo, 'exerciseHours', 47, 7).reduce((x, y) => x + y, 0)).toBeCloseTo(6.5);
   expect(recent(demo, 'waterLiters', 47, 3)).toEqual([1.4, 1.3, 1.1]);
-  expect(streak(demo)).toBe(12);
-  expect(stepsDoneToday(demo)).toBe(3);
 });
 
-test('days 1 to 46 are complete except day 34, and today has three steps', () => {
+test('today’s check-in is done, so the demo opens unlocked', () => {
+  expect(stepsDoneToday(demo)).toBe(5);
+  expect(dayComplete(demo, 47)).toBe(true);
+  expect(streak(demo)).toBe(13); // days 35 to 47; day 34 was missed
+});
+
+test('days 1 to 47 are complete except day 34', () => {
   const days = demo.entries.map((e) => e.day);
   expect(days).toEqual([...Array(47).keys()].map((i) => i + 1).filter((d) => d !== 34));
-  demo.entries.filter((e) => e.day < 47).forEach((e) => expect(e.stepsDone, `day ${e.day}`).toEqual(DAILY_STEPS));
-  expect(demo.entries.at(-1)).toMatchObject({ day: 47, stepsDone: ['vitals', 'sleepMood', 'symptoms'], symptoms: [] });
+  demo.entries.forEach((e) => expect(e.stepsDone, `day ${e.day}`).toEqual(DAILY_STEPS));
+  expect(demo.entries.at(-1)).toMatchObject({ day: 47, symptoms: ['troubleSleeping'] });
 });
 
-test("today's unfinished steps hold no values yet", () => {
-  const today = demo.entries.at(-1)!;
-  for (const id of ALL_INDICATORS) {
-    const step = INDICATORS[id].step;
-    if (step === 'intake' || step === 'radiation' || step === 'weekly') expect(today.values[id], id).toBeUndefined();
-    else expect(today.values[id], id).toBeTypeOf('number');
+test('every complete day holds every daily value', () => {
+  for (const e of demo.entries) {
+    for (const id of ALL_INDICATORS) {
+      if (INDICATORS[id].cadence === 'daily') expect(e.values[id], `${id} on day ${e.day}`).toBeTypeOf('number');
+    }
   }
 });
 
 test('the early motion-sickness cluster is in the log but not flagged', () => {
   expect(demo.entries.filter((e) => e.symptoms.includes('motionSickness')).map((e) => e.day)).toEqual([1, 2, 3, 4]);
-  expect(demo.entries.filter((e) => e.symptoms.includes('troubleSleeping')).map((e) => e.day)).toEqual([41, 43, 45]);
+  expect(demo.entries.filter((e) => e.symptoms.includes('troubleSleeping')).map((e) => e.day)).toEqual([43, 45, 47]);
 });
 
 test('weekly measurements are recorded every seven days', () => {
