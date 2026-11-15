@@ -466,6 +466,12 @@
   margin-left: auto;
 }
 
+.result-also {
+  margin: 6px 0 -2px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
 .result-finding {
   color: var(--muted);
   font-size: 14.5px;

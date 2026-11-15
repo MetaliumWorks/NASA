@@ -136,3 +136,17 @@ test('on an empty profile the check works without a baseline', async () => {
   expect(result().getByText('Possible: Altered immune response.')).toBeInTheDocument();
   expect(container.textContent).not.toMatch(/NaN|undefined|Infinity/);
 });
+
+test('the result starts with the system that was asked about, not with the heaviest one', async () => {
+  renderApp(<SymptomCheck />); // in the demo Kidneys is already at warning
+  await tick('Lightheaded or faint');
+  await press('Continue');
+  await userEvent.type(screen.getByLabelText(/^Heart rate/), '70');
+  await userEvent.type(screen.getByLabelText(/systolic/), '98');
+  await userEvent.type(screen.getByLabelText(/diastolic/), '62');
+  await press('See what the app finds');
+
+  const names = Array.from(screen.getByRole('region', { name: 'What the check found' }).querySelectorAll('.result-item b')).map((b) => b.textContent);
+  expect(names).toEqual(['Heart & vessels', 'Kidneys', 'Brain, mind & sleep', 'Bones']);
+  expect(result().getByText('Also needs attention today')).toBeInTheDocument();
+});

@@ -1,4 +1,4 @@
-import { assessDaily, expectedBoneLoss, indicatorStatus, symptomFindings, worst } from './status';
+import { assessDaily, expectedBoneLoss, indicatorStatus, symptomFindings, todayNote, withToday, worst } from './status';
 import { profile, withSymptoms } from './test-helpers';
 import type { IndicatorId, Status } from './types';
 
@@ -254,5 +254,33 @@ describe('regions', () => {
     expect(expectedBoneLoss(30)).toEqual({ min: 1, max: 1.5 });
     expect(expectedBoneLoss(47).min).toBeCloseTo(1.567, 3);
     expect(expectedBoneLoss(47).max).toBeCloseTo(2.35, 3);
+  });
+});
+
+describe('today next to an average', () => {
+  const sleep = profile([{ day: 45, sleepHours: 6 }, { day: 46, sleepHours: 6 }, { day: 47, sleepHours: 5.5 }], { sleepHours: 7.5 });
+
+  test('a finding read from an average also says today’s value', () => {
+    const f = indicatorStatus(sleep, 'sleepHours', 47);
+    expect(todayNote(sleep, f, 47)).toBe('Today 5.5 h');
+    expect(withToday(sleep, f, 47)).toBe(`Today 5.5 h · ${f.reason}`);
+  });
+
+  test('a running total says today’s value too', () => {
+    const p = profile([{ day: 46, exerciseHours: 1.5 }, { day: 47, exerciseHours: 1 }]);
+    expect(todayNote(p, indicatorStatus(p, 'exerciseHours', 47), 47)).toBe('Today 1 h');
+  });
+
+  test('nothing is added when the finding is already the last reading', () => {
+    const p = profile([{ day: 47, bodyTemp: 37.4 }], { bodyTemp: 36.7 });
+    const f = indicatorStatus(p, 'bodyTemp', 47);
+    expect(todayNote(p, f, 47)).toBeNull();
+    expect(withToday(p, f, 47)).toBe(f.reason);
+  });
+
+  test('nothing is added when today has no value yet, or for a symptom', () => {
+    const p = profile([{ day: 45, sleepHours: 6 }, { day: 46, sleepHours: 6 }], { sleepHours: 7.5 });
+    expect(todayNote(p, indicatorStatus(p, 'sleepHours', 47), 47)).toBeNull();
+    expect(todayNote(p, { symptom: 'headache', status: 'caution', due: false, value: null, reason: 'Reported today' }, 47)).toBeNull();
   });
 });

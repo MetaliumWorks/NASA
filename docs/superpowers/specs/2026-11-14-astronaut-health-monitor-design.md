@@ -316,6 +316,9 @@ Ekibin 2026-11-15 isteği: uygulama "doktor gibi" çalışsın. Aşağıdaki dö
 - **Belirti kontrolü** istenen zaman açılır. Astronot belirtisini işaretler; uygulama aynı durumun kaynaktaki diğer belirtilerini sorar ve ayırt etmeye yarayan ölçümleri ister (örn. baş dönmesi hissinde tansiyon ve nabız, bulanık görmede görme testi). Ölçüm gerekmiyorsa doğrudan sonucu söyler. Girilen belirti ve ölçümler o günün kaydına eklenir; kontrol günlük kaydın bir adımı sayılmaz.
 - Simülasyon profilinde "Fill with simulated readings" düğmesi adımı temel değere yakın okumalarla doldurur. Zorunlu on bir ölçümü sunumda elle yazmamak içindir; gerçek profilde yoktur.
 
+- **Sonuç sırası (Karar, ekip):** belirti kontrolünün sonucu, sorulan belirtilerin ve onlarla eşleşen durumların sistemleriyle başlar; zaten işaretli diğer sistemler "Also needs attention today" başlığı altında, ağırlık sırasıyla gelir.
+- **"Risk" ile "Possible" (Karar, ekip):** bir durumu gösteren tek şey kaynaklarda ona bağlanan bir alışkanlıksa (az egzersiz, az su), durumun kendisine dair bir belirti ölçülmemiştir; uygulama "Possible" yerine "Risk" der. Şu an iki durum böyle: Muscle and bone loss ve Dehydration. Bir test, bu kuralı içerik listesine karşı denetler.
+
 ### 15.4 Demo değişiklikleri (Karar, Claude)
 
 - 47. günün kaydı tamamdır. Hikâyenin son haftası bugün biter: egzersiz 41–47. günler, su 45–47. günler, uyku sorunu 43, 45 ve 47. günler. Seri 13 gündür.

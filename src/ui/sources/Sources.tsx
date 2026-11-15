@@ -243,8 +243,10 @@ export function Sources() {
         <h3 id="src-possible">Possible conditions</h3>
         <div>
           <p>
-            When findings match a condition that the source pages describe, the app names it as “Possible”. It is a match with the
-            sources, not a diagnosis, and the app names nothing the pages do not describe.
+            When findings match a condition that the source pages describe, the app names it as “Possible”. Where the only thing
+            that points to a condition is a habit the pages link to it, such as too little exercise or water, no sign of it was
+            measured and the app says “Risk” instead. Either is a match with the sources, not a diagnosis, and the app names nothing
+            the pages do not describe.
           </p>
           <table className="limits" aria-label="Possible conditions">
             <thead>
@@ -264,6 +266,7 @@ export function Sources() {
                     <th scope="row">
                       {c.name}
                       {c.urgent && <> <span className="tag tag-urgent">always reported</span></>}
+                      {c.basis === 'risk' && <> <span className="tag">shown as Risk</span></>}
                     </th>
                     <td>{[symptoms.length > 0 ? `${need}${symptoms.join(', ')}` : '', ...indicators].filter(Boolean).join('; ')}</td>
                     <td>

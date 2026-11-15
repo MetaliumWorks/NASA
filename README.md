@@ -38,6 +38,25 @@ npm run build
 `npm run build` writes a static site to `dist/`. It can be put on any static host, in a sub-folder too
 (`base: './'`). `npm run preview` serves that build locally.
 
+### As a Windows program
+
+```bash
+npm run app        # build, then open it in its own window
+npm run dist:win   # build both Windows files into release/
+```
+
+`npm run dist:win` writes two files to `release/` (not committed):
+
+- `CrewHealth-Setup-<version>.exe`: installs for the current user without admin rights, adds a desktop
+  shortcut, and starts in about a second. Use this on the presentation computer.
+- `CrewHealth-<version>.exe`: one file, no installation; it unpacks itself on every start, which takes
+  15 to 25 seconds.
+
+The window is [Electron](https://www.electronjs.org/) around the same `dist/` build (`electron/main.cjs`). It
+needs no network. Links to NASA and CSA pages open in the system browser. The menu bar is hidden; for
+presenting: **F11** full screen (**Esc** leaves it), **Ctrl +** / **Ctrl -** / **Ctrl 0** zoom, **Ctrl R** reload.
+Saved data lives in the user's app data folder and survives closing the program.
+
 ## What is in it
 
 | Screen | What it does |

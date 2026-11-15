@@ -117,13 +117,19 @@ export function BodyFigure(props: BodyFigureProps) {
   const bodyVolume = useMemo(() => ({ __html: BODY_VOLUME }), []);
   const skeletonMarkup = useMemo(() => ({ __html: SKELETON_MARKUP }), []);
 
-  const visible = (region: RegionId) => showOrgans || statuses[region] !== 'nominal';
+  // A system is drawn when organs are on, when it is flagged, or while it is selected.
+  const visible = (region: RegionId) => showOrgans || statuses[region] !== 'nominal' || selected === region;
   const shown = ORGANS.filter((o) => visible(o.region));
   // Paint order inside the organ layer: quiet organ art, then the flagged bones again, then
   // flagged organs. A flagged bone must stay readable under muscle or bowel art.
   const quietOrgans = shown.filter((o) => statuses[o.region] === 'nominal');
   const flaggedOrgans = shown.filter((o) => statuses[o.region] !== 'nominal');
-  const hotBones = ALL_HOT_IDS.map((id) => ({ id, status: boneStatus(id, statuses) })).filter((b) => b.status !== 'nominal');
+  // Flagged bones keep their status colour; the bones of a selected, nominal system are outlined.
+  const selectedBones = new Set(selected ? (HOT_BONES[selected] ?? []) : []);
+  const hotBones = ALL_HOT_IDS.map((id) => {
+    const status = boneStatus(id, statuses);
+    return { id, tone: status !== 'nominal' ? status : selectedBones.has(id) ? 'selected' : null };
+  }).filter((b) => b.tone !== null);
 
   const onBoneClick = (e: MouseEvent<SVGGElement>) => {
     const piece = (e.target as Element).closest('#layer3 > *');
@@ -199,7 +205,7 @@ export function BodyFigure(props: BodyFigureProps) {
               each copy carries its status and is toned in figure.css. */}
           <g data-testid="hot-bones" className="hot-bones" aria-hidden="true">
             {hotBones.map((b) => (
-              <use key={b.id} href={`#${b.id}`} className={`hot-${b.status}`} />
+              <use key={b.id} href={`#${b.id}`} className={`hot-${b.tone}`} />
             ))}
           </g>
           {flaggedOrgans.map(organImage)}

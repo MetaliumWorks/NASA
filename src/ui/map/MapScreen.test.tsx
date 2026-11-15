@@ -71,7 +71,7 @@ describe('region panel', () => {
     const bones = panel('Bones');
     expect(bones.getByRole('heading', { name: 'Bones' })).toBeInTheDocument();
     expect(bones.getByRole('heading', { name: 'Bones' }).parentElement).toHaveTextContent('Caution');
-    expect(bones.getByText('6.5 of 10.5 h over the last 7 days')).toBeInTheDocument();
+    expect(bones.getByText(/^Today [0-9.]+ h · 6.5 of 10.5 h over the last 7 days$/)).toBeInTheDocument();
     expect(bones.getByText('62% of target')).toBeInTheDocument();
     expect(bones.getByRole('img', { name: 'Exercise, 6.5 h over 7 days, target 1.5 h per day' })).toBeInTheDocument();
     expect(bones.getByText('Expected density loss by day 47').closest('div')).toHaveTextContent('1.6–2.4%');
@@ -232,9 +232,9 @@ describe('doctor-like additions', () => {
   test('a flagged system names the condition its findings match, with its source and what points to it', () => {
     renderMap({ selectedRegion: 'kidneys' });
     const kidneys = panel('Kidneys');
-    expect(kidneys.getByText('Possible: Dehydration.')).toBeInTheDocument();
+    expect(kidneys.getByText('Risk: Dehydration.')).toBeInTheDocument();
     expect(kidneys.getByText('Points to it: Water: 3-day average 1.3 L, 53% of baseline.')).toBeInTheDocument();
-    expect(kidneys.getByText(/It is not a diagnosis/)).toBeInTheDocument();
+    expect(kidneys.getByText(/Neither is a diagnosis/)).toBeInTheDocument();
   });
 
   test('a nominal system names no condition', () => {

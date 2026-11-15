@@ -28,6 +28,17 @@ export interface ConditionDef {
   actions: string[];
   /** A match is reported to the ground at once, whatever the status. */
   urgent?: boolean;
+  /**
+   * 'risk': the only thing that points to it is a habit the sources link to it (too
+   * little exercise, too little water). No sign of the condition itself was measured,
+   * so the app says "Risk:" instead of "Possible:".
+   */
+  basis?: 'risk';
+}
+
+/** The word the app puts before a condition's name. */
+export function conditionLead(c: ConditionDef): 'Possible' | 'Risk' {
+  return c.basis === 'risk' ? 'Risk' : 'Possible';
 }
 
 export const CONDITIONS: ConditionDef[] = [
@@ -223,6 +234,7 @@ export const CONDITIONS: ConditionDef[] = [
     indicators: [{ id: 'exerciseHours', direction: 'below' }],
     ask: ['exerciseHours'],
     actions: ['resistiveExercise', 'dailyExercise'],
+    basis: 'risk',
   },
   {
     id: 'spineElongation',
@@ -299,6 +311,7 @@ export const CONDITIONS: ConditionDef[] = [
     indicators: [{ id: 'waterLiters', direction: 'below' }],
     ask: ['waterLiters'],
     actions: ['drinkMore'],
+    basis: 'risk',
   },
 ];
 

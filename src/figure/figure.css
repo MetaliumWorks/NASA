@@ -75,6 +75,11 @@
   filter: url(#xrw);
 }
 
+/* The bones of a selected system that is nominal: film tone with a bright edge, no status colour. */
+.hot-bones > .hot-selected {
+  filter: url(#xr) drop-shadow(0 0 2px oklch(0.97 0.01 230)) drop-shadow(0 0 6px oklch(0.85 0.04 230 / 0.8));
+}
+
 #skel {
   filter: drop-shadow(0 0 5px oklch(0.85 0.04 230 / 0.35));
   cursor: pointer;

@@ -96,7 +96,8 @@ test('every possible condition is listed with its signs and source, and declared
   expect(table.getByRole('row', { name: /Mild hypoxia.*2 of: Headache, Confusion, Blurred vision, Trouble sleeping/ })).toBeInTheDocument();
   expect(table.getByRole('row', { name: /Dehydration.*Water below its limit/ })).toBeInTheDocument();
   expect(table.getByRole('row', { name: /Decompression sickness.*always reported/ })).toBeInTheDocument();
-  expect(screen.getByText(/It is a match with the\s+sources, not a diagnosis/)).toBeInTheDocument();
+  expect(screen.getByText(/Either is a match with the sources, not a diagnosis/)).toBeInTheDocument();
+  expect(screen.getAllByText('shown as Risk')).toHaveLength(2);
 });
 
 test('the ground link is declared simulated', () => {

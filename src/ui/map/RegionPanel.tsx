@@ -1,3 +1,4 @@
+import { conditionLead } from '../../content/conditions';
 import { useState } from 'react';
 import { HAZARDS } from '../../content/hazards';
 import { INDICATORS } from '../../content/indicators';
@@ -9,7 +10,7 @@ import { formatDelta, formatValue, num } from '../../domain/format';
 import { matchesFor, type ConditionMatch } from '../../domain/possible';
 import { NOT_A_DIAGNOSIS } from '../../domain/report';
 import { valuesFor } from '../../domain/series';
-import { expectedBoneLoss, indicatorStatus, type Assessment, type Finding } from '../../domain/status';
+import { expectedBoneLoss, indicatorStatus, withToday, type Assessment, type Finding } from '../../domain/status';
 import type { IndicatorId, Profile, RegionId } from '../../domain/types';
 import { useApp } from '../../state/store';
 import { Checkbox } from '../Checkbox';
@@ -73,7 +74,7 @@ function IndicatorFinding(p: { profile: Profile; id: IndicatorId; finding: Findi
       </div>
       <p className="finding-note">
         {!p.informational && finding.status !== 'nominal' && <><StatusGlyph status={finding.status} /> </>}
-        <span>{finding.reason}</span>
+        <span>{withToday(profile, finding, day)}</span>
       </p>
       {p.informational && <p className="finding-note">Decides the status of {REGIONS[p.informational].name}; shown here for information.</p>}
       {chart}
@@ -209,7 +210,10 @@ export function RegionPanel(p: { region: RegionId; assessment: Assessment; match
           {possible.map((m) => (
             <div key={m.condition.id} className="possible" data-status={m.status}>
               <p>
-                <span className="what">Possible: {m.condition.name}.</span> {m.condition.about.text}{' '}
+                <span className="what">
+                  {conditionLead(m.condition)}: {m.condition.name}.
+                </span>{' '}
+                {m.condition.about.text}{' '}
                 <SourceLink source={m.condition.about.source} />
               </p>
               <p className="possible-signs">Points to it: {m.signs.join('; ')}.</p>
