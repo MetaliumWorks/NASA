@@ -96,6 +96,13 @@ export function SymptomCheck(p: { random?: () => number; now?: () => number; rea
   };
 
   const earlier = (profile.checks ?? []).filter((c) => c.day === day);
+  // The systems this check was about: those of the reported signs and of the conditions they may belong to.
+  const askedRegions = [
+    ...new Set([
+      ...SYMPTOMS.filter((s) => picked.has(s.id) || also.has(s.id)).map((s) => s.region),
+      ...followUp([...picked, ...also]).conditions.map((c) => c.region),
+    ]),
+  ];
   const label = (id: string) => SYMPTOMS.find((s) => s.id === id)?.label ?? id;
 
   return (
@@ -236,6 +243,7 @@ export function SymptomCheck(p: { random?: () => number; now?: () => number; rea
         <>
           <CheckResult
             title="What the check found"
+            asked={askedRegions}
             doneLabel={checkInRequired(profile) ? 'Back to the daily check-in' : 'Go to body map'}
             onDone={() => dispatch({ type: 'view', view: checkInRequired(profile) ? 'checkin' : 'map' })}
           />

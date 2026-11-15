@@ -19,3 +19,12 @@ export function assessAll(p: Profile, day: number): Record<RegionId, Assessment>
 export function flagged(all: Record<RegionId, Assessment>): Assessment[] {
   return (['warning', 'caution'] as const).flatMap((status) => REGION_ORDER.map((r) => all[r]).filter((a) => a.status === status));
 }
+
+/**
+ * The flagged regions with the ones that were just asked about first. A symptom check is
+ * a question about one thing: its answer leads, and whatever else is flagged follows.
+ */
+export function flaggedFirst(all: Record<RegionId, Assessment>, first: RegionId[]): Assessment[] {
+  const list = flagged(all);
+  return [...list.filter((a) => first.includes(a.region)), ...list.filter((a) => !first.includes(a.region))];
+}
