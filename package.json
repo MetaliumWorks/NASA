@@ -34,6 +34,7 @@
     "vite": "^8.3.8",
     "vitest": "^5.1.0"
   },
+  "license": "Apache-2.0",
   "description": "Crew Health: a body-map health monitor for astronauts on long missions. NASA Space Apps Challenge 2026. Built with SI assistance (Claude, Anthropic).",
   "main": "electron/main.cjs",
   "build": {
